@@ -1,0 +1,147 @@
+<script setup>
+import { ref } from 'vue';
+import { useAuthStore } from '../stores/auth';
+
+const authStore = useAuthStore();
+
+const form = ref({
+    name: "",
+    email: "",
+    password: "",
+    password_confirmation: "",
+    user_type: "Customer",
+});
+
+authStore.authErrors = [];
+
+</script>
+
+<template>
+<div class="flex min-h-full flex-1 flex-col justify-center px-6 py-12 lg:px-8">
+    <div class="sm:mx-auto sm:w-full sm:max-w-sm">
+        <router-link :to="{name: 'Home'}" class="flex items-center">
+        <svg version="1.0" class="mx-auto h-15 w-auto" xmlns="http://www.w3.org/2000/svg"
+ width="160px" height="160px" viewBox="0 0 239.000000 300.000000"
+ preserveAspectRatio="xMidYMid meet">
+
+<g transform="translate(0.000000,300.000000) scale(0.100000,-0.100000)"
+fill="#000000" stroke="none">
+<path d="M1027 2979 c-718 -105 -1174 -823 -966 -1523 86 -288 313 -562 585
+-703 591 -308 1324 -66 1615 532 91 188 125 355 116 574 -12 303 -120 550
+-337 772 -188 192 -389 297 -654 344 -94 16 -263 18 -359 4z m4 -731 c72 -33
+113 -69 138 -121 86 -178 14 -404 -151 -477 -79 -35 -206 -37 -289 -5 -13 5
+-26 -18 -63 -114 -56 -143 -97 -208 -148 -234 -53 -26 -111 -16 -156 29 -30
+30 -33 38 -30 81 3 48 3 48 40 51 34 3 38 1 43 -25 9 -43 20 -58 44 -61 47 -7
+70 34 170 312 85 233 118 309 155 354 29 34 48 38 91 22 30 -11 33 -3 -32 -90
+-18 -23 -45 -77 -62 -119 -49 -128 -49 -118 12 -131 85 -20 169 -9 219 26 64
+45 100 109 106 192 8 125 -39 210 -135 243 -61 22 -188 16 -258 -11 -85 -33
+-177 -126 -199 -200 -22 -74 -20 -108 9 -166 31 -60 31 -64 -2 -88 l-26 -19
+-28 31 c-16 17 -36 57 -45 89 -54 187 87 391 312 448 88 22 217 14 285 -17z
+m679 17 c99 -12 193 -94 220 -189 17 -62 9 -200 -14 -246 -36 -69 -123 -140
+-174 -140 -29 0 -30 -6 -11 -68 10 -31 25 -83 34 -114 16 -58 36 -88 58 -88
+17 0 108 98 154 166 49 71 65 86 86 78 53 -20 7 -111 -123 -246 -92 -96 -117
+-106 -180 -73 -46 24 -69 66 -99 185 -32 126 -51 153 -119 169 l-43 9 -15 -36
+c-8 -21 -38 -91 -65 -158 -65 -157 -123 -215 -218 -214 -44 1 -108 36 -125 69
+-31 59 -14 141 29 141 35 0 45 -13 45 -56 0 -33 5 -46 19 -54 32 -16 57 -12
+91 16 43 36 75 105 160 339 39 110 86 226 103 258 35 67 80 109 111 105 30 -4
+34 -53 7 -82 -19 -20 -100 -184 -115 -232 -8 -25 2 -29 105 -39 142 -15 222
+62 223 216 1 66 -2 81 -27 117 -41 63 -94 86 -197 87 -75 0 -91 -3 -137 -29
+-105 -58 -154 -190 -103 -274 25 -41 25 -54 -1 -78 -26 -24 -45 -12 -79 47
+-21 36 -25 57 -24 114 2 159 114 280 279 304 33 4 69 7 80 5 11 -2 40 -6 65
+-9z"/>
+<path d="M584 391 c-17 -10 -43 -34 -57 -52 -27 -35 -35 -33 -16 2 16 32 2 59
+-31 59 -16 0 -40 -5 -54 -11 -25 -12 -43 -39 -26 -39 6 0 10 4 10 9 0 13 57
+34 75 27 8 -3 15 -12 15 -20 0 -8 -31 -90 -70 -182 -38 -93 -67 -170 -65 -173
+7 -6 8 -5 39 72 23 54 31 65 42 56 38 -32 139 30 189 115 36 62 42 109 16 135
+-26 26 -28 26 -67 2z m64 -39 c5 -47 -31 -114 -86 -162 -38 -34 -52 -40 -81
+-38 -45 4 -45 19 0 95 78 130 160 182 167 105z"/>
+<path d="M827 119 c-77 -86 -117 -111 -117 -71 0 9 14 46 30 80 17 35 30 66
+30 68 0 2 -15 4 -32 4 -84 0 -189 -128 -143 -174 22 -21 37 -20 68 4 14 11 27
+20 30 20 3 0 7 -9 10 -20 9 -37 41 -21 117 58 50 53 81 77 93 75 23 -6 21 -20
+-8 -68 -46 -75 -19 -112 40 -55 32 31 33 31 40 11 10 -34 41 -45 76 -27 27 14
+34 14 60 1 49 -26 97 -17 145 27 21 19 21 19 27 0 16 -62 97 -35 173 58 38 45
+54 57 69 53 30 -8 30 -8 1 -57 -14 -24 -26 -56 -26 -70 0 -48 35 -30 119 61
+44 48 83 84 87 80 4 -3 -5 -33 -20 -66 -29 -65 -32 -87 -13 -94 20 -7 50 9 86
+46 l34 36 18 -22 c15 -19 21 -20 38 -9 24 14 34 16 27 3 -19 -29 29 -66 67
+-52 30 12 97 69 97 83 0 6 -18 -6 -40 -26 -61 -55 -110 -60 -110 -11 0 19 11
+28 54 48 70 32 91 87 32 87 -23 0 -59 -33 -89 -82 -18 -28 -54 -45 -68 -31 -4
+4 1 27 11 51 23 51 14 55 -19 7 -27 -40 -106 -115 -121 -115 -15 0 -12 23 10
+75 49 113 11 112 -96 -2 -45 -49 -85 -85 -90 -80 -4 4 3 29 16 55 41 80 42 83
+21 89 -11 3 -21 14 -23 24 -2 16 -17 3 -66 -54 -89 -106 -162 -138 -162 -73 0
+20 9 29 43 44 57 26 84 56 67 77 -7 8 -20 15 -29 15 -19 0 -81 -59 -81 -77 0
+-10 -89 -98 -94 -91 -1 1 0 40 3 86 3 45 4 82 1 82 -3 0 -34 -33 -68 -74 -82
+-97 -152 -126 -152 -62 0 20 9 29 43 44 51 23 80 53 71 76 -11 28 -50 19 -81
+-20 -116 -145 -178 -183 -114 -70 32 55 33 76 6 76 -7 0 -15 8 -17 19 -2 14
+-22 -3 -81 -70z m-77 67 c0 -1 -12 -25 -26 -52 -34 -64 -72 -104 -101 -104
+-56 0 0 115 71 146 30 13 56 18 56 10z m327 -42 c-28 -24 -57 -32 -57 -15 0 5
+14 21 31 36 24 19 35 23 43 15 8 -8 4 -18 -17 -36z m310 0 c-28 -24 -57 -32
+-57 -15 0 5 14 21 31 36 24 19 35 23 43 15 8 -8 4 -18 -17 -36z m590 0 c-28
+-24 -57 -32 -57 -15 0 5 14 21 31 36 24 19 35 23 43 15 8 -8 4 -18 -17 -36z
+m-791 -112 c-12 -13 -20 -13 -45 -2 -17 7 -31 15 -31 19 0 3 19 28 43 56 l42
+49 3 -53 c2 -38 -1 -59 -12 -69z"/>
+</g>
+</svg>
+</router-link>
+        <h2 class="mt-10 text-center text-2xl font-bold leading-9 tracking-tight text-gray-900">Create an account</h2>
+    </div>
+
+    <div class="mt-10 sm:mx-auto sm:w-full sm:max-w-sm">
+        <form class="space-y-6" @submit.prevent="authStore.handleRegister(form)">
+            <div>
+                <label for="name" class="block text-sm font-medium leading-6 text-gray-900">Name</label>
+                <div class="mt-2">
+                    <input id="name" v-model="form.name" name="name" type="text" autocomplete="name" class="block w-full rounded-md border-0 px-3 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6" />
+                    <div v-if="authStore.errors.name">
+                        <span class="text-red-400 text-sm m-2 p-2">{{ authStore.errors.name[0]  }}</span>
+                    </div>
+                </div>
+            </div>
+
+
+            <div>
+                <label for="email" class="block text-sm font-medium leading-6 text-gray-900">Email address</label>
+                <div class="mt-2">
+                    <input id="email" v-model="form.email" name="email" type="email" autocomplete="email" class="block w-full rounded-md border-0 px-3 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6" />
+                    <div v-if="authStore.errors.email">
+                        <span class="text-red-400 text-sm m-2 p-2">{{ authStore.errors.email[0]  }}</span>
+                    </div>
+                </div>
+            </div>
+
+            <div>
+                <div class="flex items-center justify-between">
+                    <label for="password" class="block text-sm font-medium leading-6 text-gray-900">Password</label>
+                </div>
+                <div class="mt-2">
+                    <input id="password" v-model="form.password" name="password" type="password" autocomplete="current-password" class="block w-full rounded-md border-0 px-3 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6" />
+                    <div v-if="authStore.errors.password">
+                        <span class="text-red-400 text-sm m-2 p-2">{{ authStore.errors.password[0]  }}</span>
+                    </div>
+                </div>
+            </div>
+
+            <div>
+                <div class="flex items-center justify-between">
+                    <label for="confirm_password" class="block text-sm font-medium leading-6 text-gray-900">Confirm Password</label>
+                </div>
+                <div class="mt-2">
+                    <input id="confirm_password" v-model="form.password_confirmation" name="password" type="password" autocomplete="current-password" class="block w-full rounded-md border-0 px-3 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6" />
+                    <div v-if="authStore.errors.confirm_password">
+                        <span class="text-red-400 text-sm m-2 p-2">{{ authStore.errors.confirm_password[0]  }}</span>
+                    </div>
+                </div>
+            </div>
+
+            <div>
+                <button type="submit" class="flex w-full justify-center rounded-md bg-[#1A7D7A] px-3 py-1.5 text-sm font-semibold leading-6 text-white shadow-sm hover:bg-[#0F9C98] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600">Register</button>
+            </div>
+        </form>
+
+        <p class="mt-10 text-center text-sm text-gray-500">
+        Already registered?
+        {{ ' ' }}
+        <router-link :to="{name: 'Login'}" class="font-semibold leading-6 text-indigo-600 hover:text-indigo-500">Sign-in</router-link>
+        </p>
+    </div>
+</div>
+</template>

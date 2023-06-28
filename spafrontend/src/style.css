@@ -1,0 +1,48 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer components {
+    .property-card {
+        @apply
+            bg-white text-gray-700
+            max-w-3xl min-h-[10rem]
+            shadow-lg rounded-md overflow-hidden
+    }
+    .property-badge {
+        @apply
+            px-3 py-1 rounded-full text-xs bg-gray-200 text-gray-700
+            overflow-ellipsis overflow-hidden whitespace-nowrap
+    }
+    .product-title {
+        @apply
+            font-semibold text-2xl
+            overflow-ellipsis overflow-hidden whitespace-nowrap
+    }
+    .product-desc {
+        @apply
+            h-24
+            overflow-ellipsis overflow-hidden whitespace-nowrap
+    }
+    .button-primary {
+        @apply
+        bg-teal-400/80 hover:bg-teal-400/90
+        px-6 py-2 rounded-md
+        text-white font-medium
+        tracking-wider transition
+    }
+    .product-button-icon {
+        @apply
+        flex justify-center items-center
+        bg-gray-300/60 hover:bg-gray-300/80
+        transition rounded-md
+        
+    }
+    .button-delete {
+        @apply
+        bg-gray-400/80 hover:bg-gray-400/90
+        px-8 py-2 rounded-md
+        text-white font-medium
+        tracking-wider transition
+    }
+}
