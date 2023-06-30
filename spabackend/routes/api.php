@@ -10,6 +10,7 @@ use App\Http\Controllers\Api\ProductController;
 use App\Http\Controllers\Api\CategoryController;
 use App\Http\Controllers\Api\MerchantController;
 use App\Http\Controllers\Api\DeveloperController;
+use App\Http\Controllers\Api\IntegrationController;
 use App\Http\Controllers\Api\CustomerProfileController;
 use App\Http\Controllers\Api\ListingCategoryController;
 use App\Http\Controllers\Api\ProductAttributesController;
@@ -60,9 +61,6 @@ Route::group(['middleware' => ['auth:sanctum']], function () {
     Route::post('/partner/profile', [MerchantController::class, 'update']);
     Route::delete('/partner/profile/{merchant}', [MerchantController::class, 'destroy']);
 
-    
-    Route::get('/v2/partner/profile', [MerchantController::class, 'showV2']);
-
     Route::get('/partner/listings', [ListingCategoryController::class, 'index']);
     Route::get('/partner/listings/{listingCategory}', [ListingCategoryController::class, 'show']);
     Route::post('/partner/listings', [ListingCategoryController::class, 'store']);
@@ -101,6 +99,15 @@ Route::group(['middleware' => ['auth:sanctum']], function () {
     Route::get('/partner/bookings', [BooksController::class, 'merchantTransactions']);
     Route::post('/partner/checkout/{books}', [BooksController::class, 'checkout']);
 
+    //Integration keys
+    Route::post('/integration/keys/{merchant}', [IntegrationController::class, 'generateIntegrationKeys']);
+    Route::get('/integration/keys', [IntegrationController::class, 'show']);
+
+    //V2
+    Route::get('/v2/partner/profile', [MerchantController::class, 'showV2']);
+    Route::get('/v2/partner/listings', [MerchantController::class, 'indexV2']);
+    Route::get('/v2/partner/bookings', [BooksController::class, 'merchantTransactionsV2']);
+
 });
 
 //Search
@@ -121,4 +128,5 @@ Route::group(['prefix'=> 'listings', 'middleware'=>'auth:sanctum'], function(){
 
 //Keys
 Route::get('/partner/developer', [DeveloperController::class, 'devkeys']);
+
 

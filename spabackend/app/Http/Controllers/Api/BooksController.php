@@ -4,9 +4,12 @@ namespace App\Http\Controllers\Api;
 
 use App\Models\Books;
 use App\Models\Product;
+use App\Models\Merchant;
+use App\Models\Integration;
 use App\Enums\BookingStatus;
 use Illuminate\Http\Request;
 use App\Traits\HttpResponses;
+use App\Models\ListingCategory;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\URL;
 use App\Http\Controllers\Controller;
@@ -198,6 +201,72 @@ class BooksController extends Controller
             ]);
 
         return $this->success($transactions, 'Success', 200);
+    }
+
+    public function merchantTransactionsV2(Request $request){
+
+        $user = $request->user();
+        
+        if (strtoupper($user->user_type) !== 'PARTNER') {
+            return $this->error('', 'Forbidden. You dont have permission to access.', 403);
+        }
+
+        $record = Merchant::where('user_id', $user->id)->first();
+        if ($record){
+            $integration = Integration::where('merchant_id', $record->id)
+                ->where('enabled', 1)
+                ->first();
+
+            // Check if has Integration keys
+            if (is_null($integration)) 
+                return $this->error(null, 'No record found.', 404);
+
+            $listings = ListingCategory::with('products')
+                ->where('merchant_id', $record->id)->get();
+
+            // $filtered_listings = array_filter((array)$listings, function ($item) { 
+            //     return count($item->products)>0; 
+            // });
+            $ids = array();
+
+            foreach ($listings as $item) {
+                //statement(s)
+                if (count($item['products'])>0) {
+                    foreach($item['products'] as $prod) {
+                        array_push($ids, $prod['id']);
+                    }
+                }
+            }
+
+            if (count($ids)>0) {
+                $transactions = DB::table('books')
+                    ->leftJoin('booked_summaries', 'books.booked_id', '=', 'booked_summaries.id')
+                    ->leftJoin('users', 'books.user_id', '=', 'users.id')
+                    ->whereIn('books.product_id', $ids)
+                    ->orderBy('books.created_at', 'desc')
+                    ->get([
+                        'books.id AS books_id', 
+                        'books.*',
+                        'booked_summaries.*',
+                        'users.name',
+                        'users.email',
+                    ]);
+                $json_string = json_encode($transactions);
+                $encrypted_data = hCryptoEncryptByPub($integration->public_key, $json_string);
+
+                $payload = [
+                    'payload' => $encrypted_data
+                ];
+
+                return response($payload, 200);
+            } 
+            
+            return $this->error(null, 'No record found.', 404);
+        }
+
+        
+
+        return $this->success($filtered_listings, 'Success', 200);
     }
 
     public function checkout(Request $request, Books $books)

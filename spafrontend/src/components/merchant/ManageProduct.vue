@@ -94,7 +94,6 @@ const submitForm = async (data) => {
         }
 
         form.value = response.data.data;
-        console.log("response", form.value);
         toastMessage.value = "Record was successfully updated.";
         showToast(1);
         // activateCleaner();
@@ -108,6 +107,32 @@ const submitForm = async (data) => {
 
 const closeForm = () => {
     router.push({ name: 'MerchantProducts'});
+}
+
+const deleteForm = async (data) => {
+    console.log("Delete Form", data);
+    const formData = new FormData();
+    formData.append('id', data.inputData.id);
+
+    try {
+        const response = await axios.delete('/api/partner/product/'+data.inputData.id, formData);        
+        if (!response) {
+            const message = 'An error has occured: ${response.status}';
+            throw new Error(message);
+        }
+        const rd = await response.data.data;
+        toastMessage.value = "Record was successfully deleted.";
+        showToast(1);
+        router.push({ name: 'MerchantProducts' });
+        // console.log("Delete rd", rd);
+    } catch (error) {
+        console.log("delete product", error.response);
+        toastMessage.value = error.message;
+        if (error.response.status===400) 
+            toastMessage.value = error.response.data.message;
+        
+        showToast(3);
+    }
 }
 
 const showToast = (mode) => {
@@ -146,12 +171,11 @@ const regroupAttribute = (attrs) => {
         }
         groupAttributes.value.push(group);
     });
-    console.log("uniqueValues", uniqueValues)
-    console.log("groupAttributes", groupAttributes.value);
+    // console.log("uniqueValues", uniqueValues)
+    // console.log("groupAttributes", groupAttributes.value);
 }
 
 const deleteAttr = async (item)=> {
-    console.log("attr", item)
     try {
         const response = await axios.delete('/api/partner/product/attr/'+item.id, { data: item });        
         if (!response) {
@@ -159,9 +183,7 @@ const deleteAttr = async (item)=> {
             throw new Error(message);
         }
         const rd = await response.data.data;
-        console.log("rd", rd);
         router.go();
-        
     } catch (error) {
         console.log("Error", error);
     }
@@ -189,7 +211,7 @@ const addAttribute = async (item)=> {
         }
 
         // form.value.product_attributes.push(response.data.data)
-        console.log("Primary Form", form.value);
+        // console.log("Primary Form", form.value);
         toastMessage.value = "Record was successfully created.";
         showToast(1);
         router.go();
@@ -223,6 +245,7 @@ const addAttribute = async (item)=> {
                     :action="action" 
                     @save-data="submitForm"
                     @close-form="closeForm"
+                    @delete-data="deleteForm"
                 />
             </div>
         </div>

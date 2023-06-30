@@ -35,6 +35,7 @@ import BusinessProfile from '../components/merchant/Profile.vue';
 import MerchantTransactions from '../components/merchant/Transactions.vue';
 import MerchantListings from '../components/merchant/Listings.vue';
 import MerchantProducts from '../components/merchant/Products.vue';
+import MerchantSettings from '../components/merchant/Settings.vue';
 
 import ViewProduct from '../components/merchant/ProductView.vue';
 import CreatetProduct from '../components/merchant/CreateProduct.vue';
@@ -203,6 +204,12 @@ const routes = [
                 path: 'product/edit/:listingCategoryId/:id',
                 component: ManageProduct,
                 meta: { auth: true, utype: 'Partner', title: 'Manage Product' }
+            },
+            {
+                name: 'MerchantSettings',
+                path: 'settings',
+                component: MerchantSettings,
+                meta: { auth: true, utype: 'Partner', title: 'Integration' }
             }
         ],
         

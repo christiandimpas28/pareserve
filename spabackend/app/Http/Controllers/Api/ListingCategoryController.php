@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Api;
 
+use App\Models\Product;
 use App\Models\Merchant;
 use Illuminate\Http\Request;
 use App\Traits\HttpResponses;
@@ -202,8 +203,20 @@ class ListingCategoryController extends Controller
             return $this->error('', 'Forbidden. You dont have permission to access.', 403);
         }
 
-        $listingCategory->delete();
-        return response(null, 204);
+        //Check if has Product records
+        $products = Product::where('listing_category_id', $listingCategory->id)->get();
+        if ($products->isEmpty()) {
+            // return $this->success($listingCategory, 'Allow Delete', 200);
+            $listingCategory->delete();
+            return response(null, 204);
+        } else {
+            return $this->error($products, 'Unable to process your request. This particular listing has product records.', 400);
+        }
+        // $products = Product::where('listing_category_id', $listingCategory->id)->get();
+
+        
+
+        // return $this->success($products, 'Success', 200);
         
         // try{
         //     return $listingCategory;

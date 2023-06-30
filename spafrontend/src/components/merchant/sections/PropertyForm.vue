@@ -65,6 +65,7 @@ const submit = () => {
 const deleteListing = () => {
     console.log("Delete Triggered");
     console.log("Merchant:", props.form.merchant_id , "Listing:", props.form.id);
+    emit('delete-data', { inputData: props.form });
 }
 
 const deleteImage = async (item) => {
@@ -92,6 +93,7 @@ const deleteImage = async (item) => {
 const close = () => {
     // console.log("Close Click - Triggered");
     imageUploadCollection.value =[];
+    imagePreviewCollection.value=[];
     props.files.length = 0;    
     document.getElementById("photos").value=null;
     emit('close-form');
@@ -117,6 +119,7 @@ const onFileChange = (e) => {
 }
 
 const cleaner = () => {
+    imagePreviewCollection.value=[];
     imageUploadCollection.value = [];
     props.files.length = 0;    
     document.getElementById("photos").value=null;

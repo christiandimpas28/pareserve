@@ -38,5 +38,9 @@ class Merchant extends Model
     public function getListings(){
         return $this->belongsToMany(ListingCategory::class);
     }
+
+    public function integration():HasOne {
+        return $this->hasOne(Integration::class);
+    }
 }
 

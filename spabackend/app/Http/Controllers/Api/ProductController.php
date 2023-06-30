@@ -2,10 +2,12 @@
 
 namespace App\Http\Controllers\Api;
 
+use App\Models\Books;
 use App\Models\Product;
 use Illuminate\Http\Request;
 use App\Traits\HttpResponses;
 use App\Models\ListingCategory;
+use App\Models\ProductAttributes;
 use App\Http\Controllers\Controller;
 use App\Http\Resources\ProductResource;
 use App\Http\Requests\StoreProductRequest;
@@ -199,8 +201,15 @@ class ProductController extends Controller
             return $this->error('', 'Forbidden. You dont have permission to access.', 403);
         }
 
-        $product->delete();
-        return response(null, 204);
-
+        //Check if has Product records
+        $productAttributes = ProductAttributes::where('product_id', $product->id)->get();
+        $productTransactions = Books::where('product_id', $product->id)->get();
+        if ($productAttributes->isEmpty() && $productTransactions->isEmpty()) {
+            // return $this->success($product, 'Good to go. Allow Delete', 200);
+            $product->delete();
+            return response(null, 204);
+        } else {
+            return $this->error([$productAttributes, $productTransactions], 'Unable to process your request. This particular product has attribute or transaction records.', 400);
+        }
     }
 }

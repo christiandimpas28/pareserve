@@ -133,8 +133,9 @@ const deleteImage = async (item) => {
 }
 
 const deleteProduct = () => {
-    console.log("Delete Click - Triggered");
-    console.log("Listing:", props.form.listing_category_id , "Product:", props.form.id, "Name:", props.form.name);
+    // console.log("Delete Click - Triggered");
+    // console.log("Listing:", props.form.listing_category_id , "Product:", props.form.id, "Name:", props.form.name);
+    emit('delete-data', { inputData: props.form });
 }
 
 const close = () => {

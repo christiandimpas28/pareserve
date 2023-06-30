@@ -36,6 +36,7 @@ const fetchData = async () => {
         const response = await axios.get('/api/partner/profile');
         if (!response) {
             const message = 'An error has occured: ${response.status}';
+            isFetching.value = false;
             throw new Error(message);
         }
         
@@ -63,11 +64,19 @@ const fetchData = async () => {
         isFetching.value = false;
     } catch (error) {
         console.log("onMounted fetchData" ,error);
+        isFetching.value = false;
     }
 }
 
 //Clicks
 const onAddListingCLick = (parentId) => {
+    console.log("parentId", parentId);
+    if (parentId === undefined){
+        toastMessage.value = 'Merchant profile is required before you can add listing record.';
+        showToast(2);
+        return;
+    }
+    
     form.value = {};
     isForm.value = true;
     router.push({ name: 'AddListing', params: { merchantId: btoa(parentId) } });
@@ -128,6 +137,35 @@ const submitForm = async (data) => {
     }
 }
 
+const deleteForm =  async (data) => {
+    console.log("Delete Form", data);
+    const formData = new FormData();
+
+    formData.append('id', data.inputData.id);
+    formData.append('merchant_id', data.inputData.merchant_id);
+
+    try {
+        const response = await axios.delete('/api/partner/listings/'+data.inputData.id, formData);        
+        if (!response) {
+            const message = 'An error has occured: ${response.status}';
+            throw new Error(message);
+        }
+        const rd = await response.data.data;
+        toastMessage.value = "Record was successfully deleted.";
+        showToast(1);
+        activateCleaner();
+        router.push({ name: 'MerchantListings' });
+    } catch (error) {
+        console.log("delete", error.response.data);
+        toastMessage.value = error.message;
+        if (error.response.status===400){
+            toastMessage.value = error.response.data.message;
+        }
+        
+        showToast(3);
+    }
+}
+
 const activateCleaner = () => {
     isForm.value=false;
     propertyFromChild.value.cleaner();
@@ -136,6 +174,7 @@ const activateCleaner = () => {
 const closeForm = () => {
     isForm.value=false;
     router.push({ name: 'MerchantListings'});
+    // activateCleaner();
 }
 
 
@@ -153,16 +192,19 @@ const showToast = (mode) => {
 
 router.beforeResolve((to, from) => {
     // console.log('User Authenticated')
-    // console.log('Coming from:', from.path);
-    // console.log('Going to:', to.path);
-    // console.log('Route Param', to.name);
+    console.log('Coming from:', from.path);
+    console.log('Going to:', to.path);
+    console.log('Route Param', to.name);
     // console.log('Route ID', router.params.id);
+    isFetching.value =true;
     if (to.name==='MerchantListings') {
         
         fetchData().catch(error => {
             error.message; // 'An error has occurred: 404'
             console.log("fetchData Error: ", error.message);
+            isForm.value=false;
         }); 
+        isForm.value=false;
     }
 
     if (to.name==='EditListing' && to.params && to.params.id != undefined) {
@@ -188,6 +230,7 @@ router.beforeResolve((to, from) => {
             form.value=item[0]; 
             action.value ='PUT';
             console.log("selected", form.value);
+            return true;
         } else {
             return false;
         }
@@ -226,6 +269,7 @@ router.beforeResolve((to, from) => {
                     :form="form"
                     :action="action" 
                     @save-data="submitForm"
+                    @delete-data="deleteForm"
                     @close-form="closeForm" 
                 />
             </div>
@@ -244,7 +288,7 @@ router.beforeResolve((to, from) => {
                 -->
                 
                 <!-- List Type -->
-                <ul class="flex flex-wrap items-center justify-start mb-6 text-gray-900 white:text-white">
+                <ul class="flex flex-wrap items-center justify-start mb-6 text-gray-900 white:text-white space-y-2 list-disc">
                     <li v-for="item in products">
                         <ProductBadge :form="item" />
                     </li>

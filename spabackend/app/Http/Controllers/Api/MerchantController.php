@@ -4,8 +4,10 @@ namespace App\Http\Controllers\Api;
 
 use App\Models\User;
 use App\Models\Merchant;
+use App\Models\Integration;
 use Illuminate\Http\Request;
 use App\Traits\HttpResponses;
+use App\Models\ListingCategory;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Crypt;
@@ -35,12 +37,49 @@ class MerchantController extends Controller
         return MerchantsResource::collection(Merchant::all());
     }
 
-    /**
-     * Show the form for creating a new resource.
-     */
-    public function create()
-    {
-        //
+    public function indexV2(Request $request){
+        $user = $request->user();
+        
+        if (strtoupper($user->user_type) !== 'PARTNER') {
+            return $this->error('', 'Forbidden. You dont have permission to access.', 403);
+        }
+
+        $record = Merchant::where('user_id', $user->id)->first();
+        if ($record){
+            
+            $integration = Integration::where('merchant_id', $record->id)
+                ->where('enabled', 1)
+                ->first();
+
+            // Check if has Integration keys
+            if (is_null($integration)) 
+                return $this->error(null, 'No record found.', 404);
+
+            $listings = ListingCategory::with('products')
+                ->where('merchant_id', $record->id)->first();
+
+
+            //JSON_FORCE_OBJECT
+            // $json_string = json_encode($listings, JSON_HEX_TAG | JSON_HEX_APOS | JSON_HEX_QUOT | JSON_HEX_AMP | JSON_UNESCAPED_UNICODE);
+            // $json_string = utf8_encode()
+            $json_string = json_encode($listings);
+            // $json_string = trim(preg_replace('/[\t|\n{2,}]/', '', $json_string));
+            // $json_string = str_replace(array("\r\n", "\r", "\n", "\t"), '', $json_string);
+
+            $encrypted_data = hCryptoEncryptByPub($integration->public_key, $json_string);
+            // $decrypted_data = hCryptoDecryptByPri($integration->private_key, base64_decode($encrypted_data));
+
+            $payload = [
+                'payload' => $encrypted_data
+            ];
+
+            // $keys = hGenerateIntegrationKeys();
+
+            return response($payload, 200);
+
+        }
+
+        return $this->error($record, 'No record found.', 404);
     }
 
     /**
@@ -110,18 +149,32 @@ class MerchantController extends Controller
             return $this->error('', 'Forbidden. You dont have permission to access.', 403);
         }
 
-
         $record = Merchant::where('user_id', $user->id)->first();
         if ($record){
-            $json_string = json_encode($record); 
+            $integration = Integration::where('merchant_id', $record->id)
+                ->where('enabled', 1)
+                ->first();
+
+            // Check if has Integration keys
+            if (is_null($integration)) 
+                return $this->error(null, 'No record found.', 404);
+
+            $json_string = json_encode($record, JSON_UNESCAPED_UNICODE);             
+
+            // $payload = [
+            //     'payload' => Crypt::encryptString($json_string)
+            // ];
+
+            $encrypted_data = hCryptoEncryptByPub($integration->public_key, $json_string);
+            $decrypted_data = hCryptoDecryptByPri($integration->private_key, base64_decode($encrypted_data));
+
             $payload = [
-                'payload' => Crypt::encryptString($json_string)
+                'payload' => $encrypted_data
             ];
 
-            return $this->success($payload, 'OK.', 200);
+            return response($payload, 200);
         }
             
-        
         return $this->error($record, 'No record found.', 404);
     }
 
@@ -130,10 +183,6 @@ class MerchantController extends Controller
      */
     public function update(StoreMerchantRequest $request, Merchant $merchant)
     {
-        // $merchant->update($request->only([
-        //     'name', 'bus_contact_name', 'bus_contact_no', 'bus_email', 'bus_address',
-        // ]));
-
         $request->validated();
         $user = $request->user()
                 ->makeHidden([
