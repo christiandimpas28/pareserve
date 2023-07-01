@@ -15,45 +15,51 @@ class IntegrationController extends Controller
 
     public function generateIntegrationKeys(Request $request, Merchant $merchant){
         // return $this->error($request['merchant_id'], 'Invalid request', 400);
-        if (!$merchant)  
-            return $this->error($merchant, '1 Invalid request', 400);
+        try {
+            if (!$merchant)  
+                return $this->error($merchant, '1 Invalid request', 400);
 
-        if (!$request->has('merchant_id')) 
-            return $this->error(null, '2 Invalid request', 400);
+            if (!$request->has('merchant_id')) 
+                return $this->error(null, '2 Invalid request', 400);
 
-        if ($request->has('merchant_id') && $request['merchant_id'] !== ($merchant->id."")) 
-            return $this->error(null, 'Invalid request', 400);
+            if ($request->has('merchant_id') && $request['merchant_id'] !== ($merchant->id."")) 
+                return $this->error(null, 'Invalid request', 400);
 
-        $user = $request->user();
-        if (!$user)
-            return $this->error('', 'Unauthorized', 401);
 
-        if (strtoupper($user->user_type) !== 'PARTNER') 
-            return $this->error('', 'Forbidden. You dont have permission to access.', 403);
-        
-        $integrationKeys = hGenerateIntegrationKeys();
+            $user = $request->user();
+            if (!$user)
+                return $this->error('', 'Unauthorized', 401);
 
-        if ($integrationKeys === null) {
-            return $this->error(null, 'Unexpected response data.', 400);
+            if (strtoupper($user->user_type) !== 'PARTNER') 
+                return $this->error('', 'Forbidden. You dont have permission to access.', 403);
+            
+            $integrationKeys = hGenerateIntegrationKeys();
+
+            if ($integrationKeys === null) {
+                return $this->error(null, 'Unexpected response data.', 400);
+            }
+
+            $record = $this->getIntegrationKeys($merchant->id);
+            if ($record) 
+                return $this->error(null, 'Unable to process your request. Record already exists.', 409);
+
+            $integration = Integration::create([
+                'merchant_id' => $merchant->id,
+                'private_key' => $integrationKeys[0],
+                'public_key' => $integrationKeys[1],
+                'password' => null,
+                'enabled' => 1,
+            ]);
+
+            $integration->makeHidden([
+                'password'
+            ]);
+
+            return $this->success($integration, 'Success', 200);
+        } catch (\Throwable $th) {
+            //throw $th;
+            return $this->error('', $th->getMessage(), 400);
         }
-
-        $record = $this->getIntegrationKeys($merchant->id);
-        if ($record) 
-            return $this->error(null, 'Unable to process your request. Record already exists.', 409);
-
-        $integration = Integration::create([
-            'merchant_id' => $merchant->id,
-            'private_key' => $integrationKeys[0],
-            'public_key' => $integrationKeys[1],
-            'password' => null,
-            'enabled' => 1,
-        ]);
-
-        $integration->makeHidden([
-            'password'
-        ]);
-
-        return $this->success($integration, 'Success', 200);
     }
 
     private function getIntegrationKeys($merchant_id) {

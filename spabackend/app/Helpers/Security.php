@@ -36,7 +36,7 @@ if (!function_exists('hCryptoEncryptByPub')) {
             $public_key = PublicKey::fromString($str_public_key);
             return base64_encode($public_key->encrypt($plain_data));
         } catch (\Throwable $th) {
-            return $th;
+            return $th->getMessage();
         }
         
     }

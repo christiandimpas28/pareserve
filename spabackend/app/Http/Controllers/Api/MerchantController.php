@@ -55,8 +55,9 @@ class MerchantController extends Controller
             if (is_null($integration)) 
                 return $this->error(null, 'No record found.', 404);
 
-            $listings = ListingCategory::with('products')
-                ->where('merchant_id', $record->id)->first();
+            // $listings = ListingCategory::with('products')
+            //     ->where('merchant_id', $record->id)->first();
+            $listings = ListingCategory::where('merchant_id', $record->id)->first();
 
 
             //JSON_FORCE_OBJECT
@@ -65,8 +66,10 @@ class MerchantController extends Controller
             $json_string = json_encode($listings);
             // $json_string = trim(preg_replace('/[\t|\n{2,}]/', '', $json_string));
             // $json_string = str_replace(array("\r\n", "\r", "\n", "\t"), '', $json_string);
+            $json_string= substr($json_string,500);
 
             $encrypted_data = hCryptoEncryptByPub($integration->public_key, $json_string);
+           
             // $decrypted_data = hCryptoDecryptByPri($integration->private_key, base64_decode($encrypted_data));
 
             $payload = [
