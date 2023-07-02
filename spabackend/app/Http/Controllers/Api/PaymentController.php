@@ -241,7 +241,7 @@ class PaymentController extends Controller
         if (Session::has('payment_session'))
         {
             $value = Session::get('payment_session');
-            dd($value);
+            // dd($value);
         }
     }
 

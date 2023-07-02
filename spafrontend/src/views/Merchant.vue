@@ -94,6 +94,15 @@ const fetchData = async () => {
         if (error.response.status === 403){
             router.push({ name: 'Error403'})
         }
+
+        if (error.response.status === 406){
+            console.log("error.response 406", error.response);
+            if (error.response.data !==undefined && error.response.data.id !== undefined){
+                router.push({ name: "LoginVerify", params: { id: btoa(error.response.data.id) }});
+            } else {
+                router.push({ name: 'Error406'})
+            }
+        }
     }
 }
 

@@ -72,5 +72,14 @@ class User extends Authenticatable
         return $this->belongsTo(Merchant::class);
     }
     
+    public function userLogs()
+    {
+        return $this->hasMany(UserLogs::class);
+    }
+
+    public function loginOtp()
+    {
+        return $this->hasMany(LoginOtp::class);
+    }
 
 }

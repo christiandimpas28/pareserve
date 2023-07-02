@@ -14,6 +14,7 @@ import Register from '../components/Register.vue';
 import Login from '../components/Login.vue';
 import ForgotPassword from '../components/ForgotPassword.vue';
 import ResetPassword from '../components/ResetPassword.vue';
+import LoginVerify from '../components/LoginVerify.vue';
 
 /* Sub Components */
 import MyAccount from '../components/customer/MyAccount.vue';
@@ -49,6 +50,7 @@ import PaymentCancelled from '../components/home/PaymentCancelled.vue';
 /* Error Page */
 import Error401 from '../views/Error401.vue';
 import Error403 from '../views/Error403.vue';
+import Error406 from '../views/Error406.vue';
 
 const history = createWebHistory();
 const routes = [
@@ -234,6 +236,10 @@ const routes = [
         component: ResetPassword,
         meta: { auth: false }
     }, {
+        path: '/verify-login/:id',
+        name: 'LoginVerify',
+        component: LoginVerify
+    }, {
         path: '/:pathMatch(.*)*',
         name: 'PageNotFound',
         component: PageNotFound,
@@ -245,6 +251,10 @@ const routes = [
         path: '/forbidden',
         name: 'Error403',
         component: Error403
+    }, {
+        path: '/not-acceptable',
+        name: 'Error406',
+        component: Error406
     }
     
 ]

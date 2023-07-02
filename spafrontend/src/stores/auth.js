@@ -99,6 +99,21 @@ export const useAuthStore = defineStore("auth", {
                     return;
                 }
 
+                // Log Login Activity
+                const logReponse = await axios.get('/api/login/log').catch( function (error) {
+                    if (error.response) {
+                        console.log("Login Log Error", error.response);
+                    }
+                });
+
+                // console.log("Login Log Success", logReponse.data);
+                // console.log("Login Log Data data", logReponse.data.data);
+                // console.log("Login Log Data data isOtpRequired", logReponse.data.data.isOtpRequired);
+                if (logReponse.data !== undefined && logReponse.data.data !== undefined && logReponse.data.data.isOtpRequired === true) {
+                    this.router.push({ name: "LoginVerify", params: { id: btoa(logReponse.data.data.otp_id) }});
+                    return;
+                }
+
                 if (localStorage.getItem('guestCheckoutAttempt')===null){
                     this.authRedirect();
                 } else {
@@ -225,6 +240,34 @@ export const useAuthStore = defineStore("auth", {
         async testMechant() {
             await this.getToken();
             const data = await axios.get("/merchants");
+        },
+        async handleVerifyLogin(form) {
+            this.authErrors = [];
+            const el = document.getElementById('login-verify-submit');
+            if (el.innerText==="Verifying...") return false;
+
+            el.innerText = "Verifying...";
+            console.log("handleVerifyLogin", form, " Element: ", el, " Decoded ID:", atob(form.id));
+            await this.getToken();
+            try {
+                const response = await axios.post('/api/login/verify-access', {
+                    id: atob(form.id),
+                    otp: form.otp.trim()
+                });
+                // console.log("handleVerifyLogin Response ", response);
+                if (response.data !== undefined && response.data.redirect !== undefined)
+                    this.router.push(response.data.redirect);
+            } catch (error) {
+                el.innerText = "Submit";
+                if (error.response.status === 422){
+                    this.authErrors = error.response.data.errors;
+                }
+
+                if (error.response.status === 401){
+                    this.router.push({ name: 'Error401'});
+                }
+
+            }
         }
     }
 })

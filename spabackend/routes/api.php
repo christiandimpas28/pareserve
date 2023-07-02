@@ -48,12 +48,14 @@ Route::post('/login', [AuthController::class, 'login'])
 
 // Route::get('categories', [CategoryController::class, 'index']);
 
-Route::group(['middleware' => ['auth:sanctum']], function () {
+Route::group(['middleware' => ['auth:sanctum', 'verifyaccess']], function () {
     //Using apiResource
     // Route::apiResource('/categories', CategoryController::class);
     // Route::apiResource('/merchants', MerchantController::class)->only([
     //     'store', 'update', 'destroy', 'index'
     // ]);
+    Route::get('/login/log', [AuthController::class, 'loginLog'])->name('login.log');
+    Route::post('/login/verify-access', [AuthController::class, 'loginVerify'])->name('login.verify-access');
 
     //Merchant
     Route::get('/merchants', [MerchantController::class, 'index']);
