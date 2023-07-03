@@ -5,6 +5,8 @@ import { useAuthStore } from '../stores/auth';
 import { useRouter } from 'vue-router';
 import Navigation from '../components/home/Navigation.vue';
 import SearchCategory from '../components/home/sections/searchCategoty.vue';
+import SearchForm from '../components/home/sections/SearchForm.vue';
+
 
     // import Hero from '../components/home/sections/HeroFrom.vue'
 
@@ -24,6 +26,7 @@ const authStore = useAuthStore();
 const showMain = ref(true);
 const gridRows = ref([0,3,6,9,12,15]);
 const topDestinations = ref([]);
+const searchParam = ref({});
 
 const displayCollection = (idx) => {
     const new_coll = [];
@@ -73,6 +76,11 @@ const search = (param) => {
     router.push({ name: 'ListingsSearch', query: { query: val, start: start, end: end } })
 }
 
+const getSearch = (param) => {
+    const val = (param.query !== undefined) ? encodeURIComponent(param.query):'';  
+    router.push({ name: 'ListingsSearch', query: { query: val, start: null, end: null } })
+}
+
     // router.push({ name: 'Listings' });
 
 router.beforeEach((to, from) => { 
@@ -87,8 +95,11 @@ router.beforeEach((to, from) => {
 <template>
     <Navigation></Navigation>
     <router-view></router-view>
-    <div class="pb-12 pt-10 md:pt-16" v-show="showMain">
+    <div class="pb-12 pt-4 md:pt-16" v-show="showMain">
         <div class="max-w-5xl mx-auto px-4 sm:px-6">
+            <div class="fles-1 mb-4">
+                <SearchForm @search-form="getSearch" :form="searchParam" />
+            </div>
             <div class="flex-1">
                 <div class="mb-4 mt-8 items-center justify-center">
                     <h1 class="font-semibold text-3xl">Stay at our top unique properties</h1>

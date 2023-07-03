@@ -53,11 +53,7 @@ class AuthController extends Controller
             'otp_id' => null
         ];
 
-        // When You call the detect function You will get a result object, from the current user's agent.
-        // $result = Browser::detect();
-        // return $this->success($result['browserFamily'], 'OK', 200);
         $clientIp = $request->ip();
-
         if (Browser::isBot()) {
             $log_data['isOtpRequired'] = true;
         } else {
@@ -96,16 +92,6 @@ class AuthController extends Controller
                     ];
                     Mail::to($user->email)->send(new LoginOneTimePass($obj));
                 }
-
-                // $r = [
-                //     'existing_record' =>$ulr,
-                //     'response' => $log_data,
-                //     'device_type' => Browser::deviceType(),
-                //     'platform_name' => Browser::platformName(),
-                //     'browser_family' => Browser::browserFamily(),
-                //     'ip' => $clientIp,
-                // ];
-                // return $this->success($r, 'ulrc data', 200);
             }
         }
 

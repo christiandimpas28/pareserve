@@ -220,6 +220,7 @@ class PaymentController extends Controller
             Session::forget('payment_session');
 
             // Send Email
+            
             $obj = [
                 'booking_ref_no' => $bookedSummary->booking_reference,
                 'product_name' =>  $books->product_name,

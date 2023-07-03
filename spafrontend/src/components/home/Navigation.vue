@@ -28,7 +28,7 @@ const userAccount = () => {
   if (authStore.user == null) return false;
 
   if (authStore.user.user_type.toUpperCase() === 'CUSTOMER') {
-    router.push({name: 'CustomerProfile'});
+    router.push({name: 'Customer'});
   }
 
   if (authStore.user.user_type.toUpperCase() === 'PARTNER') {
@@ -48,7 +48,7 @@ console.log("NAVI");
 <template>
 <nav class="bg-white border-gray-200">
   <div class="max-w-screen-xl flex flex-wrap items-center justify-between mx-auto p-4">
-    <router-link :to="{name: 'Listings'}" class="flex items-center">
+    <router-link :to="{name: 'Home'}" class="flex items-center">
       <svg version="1.0" xmlns="http://www.w3.org/2000/svg"
  width="50px" height="50px" viewBox="0 0 300.000000 300.000000"
  preserveAspectRatio="xMidYMid meet">

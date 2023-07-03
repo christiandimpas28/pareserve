@@ -55,7 +55,7 @@ const copyText = (el_id) => {
     <div class="mb-4 " v-show="!noKeys">
         <div class="border-l-4 border-blue-600 px-2 mb-6" v-show="isEnabled">
             <h2 class="font-semibold ">Important! </h2>
-            <p>The private key should always be kept secure and do not f*ckn share these keys to anyone. Otherwise you're dooomed!</p>
+            <p>The private key should be keep safe and no to be shared by anyone! Otherwise your data will be compromised!</p>
         </div>
 
         <div class="border-l-4 border-red-600 px-2 mb-6" v-show="!isEnabled">
