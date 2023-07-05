@@ -149,14 +149,14 @@ class AuthController extends Controller
     public function changePassword(Request $request) {
         $request->validate([
             'old_password' => ['required'],
-            'new_password' => ['required'],
-            // 'new_password' => ['required', Rules\Password::min(8)
-            //     ->mixedCase()
-            //     ->letters()
-            //     ->numbers()
-            //     ->symbols()
-            //     ->uncompromised(),
-            // ]
+            // 'new_password' => ['required'],
+            'new_password' => ['required', Rules\Password::min(8)
+                ->mixedCase()
+                ->letters()
+                ->numbers()
+                ->symbols()
+                ->uncompromised(),
+            ]
         ]);
 
         #Match The Old Password

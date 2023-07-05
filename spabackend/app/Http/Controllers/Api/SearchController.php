@@ -37,7 +37,8 @@ class SearchController extends Controller
         )
         ->leftJoin("listing_categories", "listing_categories.id", "=", "products.listing_category_id")
         ->where(
-            DB::raw("CONCAT(products.name,' ',listing_categories.category,' ',listing_categories.address,' ',listing_categories.city)"), 
+            // DB::raw("CONCAT(products.name,' ',listing_categories.category,' ',listing_categories.address,' ',listing_categories.city)"), 
+            DB::raw("CONCAT(products.name,' ',products.description,' ',listing_categories.name,' ',listing_categories.category,' ',listing_categories.address,' ',listing_categories.city)"), 
             'like', 
             "%{$q}%")
         ->get();
