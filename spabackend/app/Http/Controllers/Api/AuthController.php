@@ -4,15 +4,17 @@
 namespace App\Http\Controllers\Api;
 
 use Browser;
+use Rules\Password;
 use App\Helpers\Otp;
 use App\Models\User;
 use App\Models\LoginOtp;
 use App\Models\UserLogs;
 
-use Illuminate\Http\Request;
 use App\Traits\HttpResponses;
 use App\Mail\LoginOneTimePass;
 use App\Http\Controllers\Controller;
+use Illuminate\Http\Request;
+use Illuminate\Validation\Rules;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Mail;
 use App\Http\Requests\Auth\LoginRequest;
@@ -142,5 +144,39 @@ class AuthController extends Controller
                 'redirect' => $redirect,
             ]);
         }
+    }
+
+    public function changePassword(Request $request) {
+        $request->validate([
+            'old_password' => ['required'],
+            'new_password' => ['required'],
+            // 'new_password' => ['required', Rules\Password::min(8)
+            //     ->mixedCase()
+            //     ->letters()
+            //     ->numbers()
+            //     ->symbols()
+            //     ->uncompromised(),
+            // ]
+        ]);
+
+        #Match The Old Password
+        if(!Hash::check($request->old_password, auth()->user()->password)){
+            return response()->json([
+                'message' => "Ooops! Password Doesn't match",
+                'errors' => [
+                    'password' => array("Ooops! Password Doesn't match") 
+                ]
+            ], 422);
+        }
+
+        #Update the new Password
+        User::whereId(auth()->user()->id)->update([
+            'password' => Hash::make($request->new_password)
+        ]);
+
+        return response()->json([
+            'status' => true,
+            'message' => 'Password was updated successfuly.',
+        ]);
     }
 }

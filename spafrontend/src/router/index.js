@@ -17,6 +17,7 @@ import ResetPassword from '../components/ResetPassword.vue';
 import LoginVerify from '../components/LoginVerify.vue';
 
 /* Sub Components */
+import CustomerAccount from '../components/customer/MyAccount.vue';
 import MyAccount from '../components/customer/MyAccount.vue';
 import Profile from '../components/customer/Profile.vue';
 import Bookings from '../components/customer/Bookings.vue'; //Customer Confirmed Booking Transactions
@@ -33,6 +34,7 @@ import ListingSearch from '../components/home/ListingSearch.vue';
 /* partner|merchant */
 import MerchantDashboard from '../components/merchant/Dashboard.vue';
 import BusinessProfile from '../components/merchant/Profile.vue';
+import MerchantAccount from '../components/merchant/MyAccount.vue';
 import MerchantTransactions from '../components/merchant/Transactions.vue';
 import MerchantListings from '../components/merchant/Listings.vue';
 import MerchantProducts from '../components/merchant/Products.vue';
@@ -122,8 +124,8 @@ const routes = [
             {
                 name: 'CustomerAccount',
                 path: 'account',
-                component: MyAccount,
-                meta: { auth: true, utype: 'Customer', title: 'My Account' }
+                component: CustomerAccount,
+                meta: { auth: true, utype: 'Customer', title: 'User Account' }
             }, {
                 name: 'CustomerProfile',
                 path: 'profile',
@@ -152,6 +154,12 @@ const routes = [
                 path: 'dashboard',
                 component: MerchantDashboard,
                 meta: { auth: true, utype: 'Partner', title: 'Dashboard' }
+            },
+            {
+                name: 'MerchantAccount',
+                path: 'account',
+                component: MerchantAccount,
+                meta: { auth: true, utype: 'Partner', title: 'User Account' }
             },
             {
                 name: 'BusinessProfile',

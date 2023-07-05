@@ -1,8 +1,9 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
-use App\Http\Controllers\Auth\MerchantController;
+use App\Http\Controllers\Api\AuthController;
 use App\Http\Controllers\Auth\UserOtpController;
+use App\Http\Controllers\Auth\MerchantController;
 use App\Http\Controllers\Auth\NewPasswordController;
 use App\Http\Controllers\Auth\VerifyEmailController;
 use App\Http\Controllers\Auth\RegisteredUserController;
@@ -53,5 +54,9 @@ Route::post('/otp/send/verify', [UserOtpController::class, 'verify'])
             
 Route::get('/merchants', [MerchantController::class, 'index'])
                 ->middleware(['auth'])
-                ->name('merchant.index');        
+                ->name('merchant.index');
+
+Route::post('/change-password', [AuthController::class, 'changePassword'])
+                ->middleware(['auth'])
+                ->name('change.password');    
 
