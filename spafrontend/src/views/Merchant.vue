@@ -2,6 +2,7 @@
 import { onMounted, computed, watch, ref } from 'vue';
 import { useAuthStore } from '../stores/auth';
 import { useRouter } from 'vue-router';
+import { initFlowbite } from 'flowbite';
 import axios from "axios";
 import SideBar from '../components/merchant/sections/sidebar.vue';
 import BookingCounts from '../components/merchant/sections/BookingCounts.vue';
@@ -20,6 +21,7 @@ const transactionCollection = ref([]);
 const totals = ref({});
 
 onMounted(() => {
+    initFlowbite();
     showMain.value= router.currentRoute.value.name==='Partner';
     componentTitle.value = router.currentRoute.value.meta.title;
     
@@ -177,7 +179,27 @@ router.beforeEach((to, from) => {
                     <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6 mr-3">
                         <path stroke-linecap="round" stroke-linejoin="round" d="M17.982 18.725A7.488 7.488 0 0012 15.75a7.488 7.488 0 00-5.982 2.975m11.963 0a9 9 0 10-11.963 0m11.963 0A8.966 8.966 0 0112 21a8.966 8.966 0 01-5.982-2.275M15 9.75a3 3 0 11-6 0 3 3 0 016 0z" />
                     </svg>
-                    {{ authStore.user?.name }}
+                    <button id="dropdownDividerButton" data-dropdown-toggle="dropdownDivider" type="button" class="inline-flex items-center">
+                        {{ authStore.user?.name }}
+                        <svg class="w-4 h-4 ml-2" aria-hidden="true" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+                        </svg>
+                    </button>
+
+                    <!-- Dropdown menu -->
+                    <div id="dropdownDivider" class="z-10 hidden bg-white divide-y divide-gray-100 rounded-lg shadow w-44 dark:bg-gray-700 dark:divide-gray-600">
+                        <ul class="py-2 text-sm text-gray-700 dark:text-gray-200" aria-labelledby="dropdownDividerButton">
+                        <li>
+                            <router-link :to="{name: 'BusinessProfile'}" class="block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white">Profile</router-link>
+                        </li>
+                        <li>
+                            <router-link :to="{name: 'MerchantAccount'}" class="block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white">My Account</router-link>
+                        </li>
+                        </ul>
+                        <div class="py-2">
+                            <a href="#" @click.prevent="authStore.handleLogout()" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 dark:hover:bg-gray-600 dark:text-gray-200 dark:hover:text-white">Logout</a>
+                        </div>
+                    </div>
                 </div>
             </div>
             <div class="mx-auto max-w-screen-4xl p-4 md:p-6 2xl:p-10">
