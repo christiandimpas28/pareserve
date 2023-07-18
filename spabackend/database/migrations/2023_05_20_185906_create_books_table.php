@@ -40,6 +40,7 @@ return new class extends Migration
                 BookingStatus::COMPLETED->value,
                 ])->default(BookingStatus::PENDING->value);
             $table->unsignedBigInteger('booked_id')->nullable();
+            $table->json('subtotals')->nullable();
             $table->timestamps();
         });
     }

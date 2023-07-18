@@ -19,9 +19,14 @@ return new class extends Migration
             $table->string('slug');
             $table->string('description', 5000)->nullable();
             $table->tinyInteger('max_guest');
+            $table->tinyInteger('min_guest');
             $table->string('photos', 2000)->nullable();
             $table->tinyInteger('enabled')->default(1);
             $table->decimal('rate', $precision = 8, $scale = 2);
+            $table->decimal('extra_pax_rate', $precision = 8, $scale = 2)->default(0.0);
+            $table->decimal('extra_bed_rate', $precision = 8, $scale = 2)->default(0.0);
+            $table->decimal('breakfast_rate', $precision = 8, $scale = 2)->default(0.0);
+            $table->tinyInteger('free_below_age')->default(7);
             $table->decimal('discount', $precision = 8, $scale = 2)->default(0.0);
             // $table->foreignId('listing_category_id')
             //     ->constrained(table: 'listing_categories', indexName: 'idx_listing_category_id')

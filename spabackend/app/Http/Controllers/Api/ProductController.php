@@ -51,6 +51,7 @@ class ProductController extends Controller
             'slug' => ['required'],
             'description' => ['required', 'max:3000'],
             'max_guest' => ['required'],
+            'min_guest' => ['required'],
             'rate' => ['required'],
             'listing_category_id' =>['required']
         ]);
@@ -120,6 +121,7 @@ class ProductController extends Controller
             'slug' => ['required'],
             'description' => ['required', 'max:3000'],
             'max_guest' => ['required'],
+            'min_guest' => ['required'],
             'rate' => ['required'],
             'listing_category_id' =>['required']
         ]);

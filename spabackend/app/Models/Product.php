@@ -16,9 +16,14 @@ class Product extends Model
         'slug',
         'description',
         'max_guest',
+        'min_guest',
         'photos',
         'enabled',
         'rate',
+        'extra_pax_rate',
+        'extra_bed_rate',
+        'breakfast_rate',
+        'free_below_age',
         'discount',
         'listing_category_id',
     ];
@@ -36,5 +41,10 @@ class Product extends Model
     public function productAttributes()
     {
         return $this->hasMany(ProductAttributes::class);
+    }
+
+    public function productReviews()
+    {
+        return $this->hasMany(ProductReviews::class);
     }
 }

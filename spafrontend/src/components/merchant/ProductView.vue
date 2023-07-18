@@ -1,6 +1,6 @@
 <script setup>
 import axios from "axios";
-import { ref, onMounted, watch } from 'vue';
+import { ref, onMounted, watch, computed } from 'vue';
 import { useRouter } from 'vue-router'
 import { useAuthStore } from '../../stores/auth';
 
@@ -59,6 +59,40 @@ const fetchData = async () => {
     }
 }
 
+const baseRate = computed( () => { 
+    return '₱'+ moneyFormat(form.value.rate);
+});
+
+const extraPaxRate = computed( () => { 
+    return '₱'+ moneyFormat(form.value.extra_pax_rate);
+});
+
+const extraBedRate = computed( () => { 
+    return '₱'+ moneyFormat(form.value.extra_bed_rate);
+});
+
+const breakfastRate = computed( () => { 
+    return '₱'+ moneyFormat(form.value.breakfast_rate);
+});
+
+const maxExtraBed = computed( () => { 
+    if (isNaN(form.value.max_guest)) return '0';
+    return form.value.max_guest - form.value.min_guest;
+});
+
+
+
+
+const moneyFormat = (v) =>{
+    try {
+        if (isNaN(v)) throw "Not a Number" 
+        const fv = parseFloat(v);
+        return fv.toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2});
+    } catch (error) {
+        return "0.00"
+    }
+}
+
 const regroupAttribute = (attrs) => {
     // const attrs = [
     //     { name: 'Outdoor', value: 'Fire Pit'}, 
@@ -98,7 +132,7 @@ const regroupAttribute = (attrs) => {
         let group =  {
             name: item,
             title: title,
-            not_included: title==='NOT INCLUDED',
+            not_included: title==='NOT INCLUDED' || title==='NOT ALLOWED',
             data: group_src
         }
         groupAttributes.value.push(group);
@@ -113,63 +147,85 @@ const regroupAttribute = (attrs) => {
         <div class="w-full">
             <h4 class="text-sm bg-sky-500">{{ parent?.name  }}</h4>
             <h1 class="product-title">
-                {{ form?.name }} @ {{ form?.rate }} <span>rate per night</span>
+                {{ form?.name }} @ {{ baseRate }} <span>rate per night</span>
             </h1>
             <p class="my-2 text-md text-gray-700">
                 {{ form?.description }}
             </p>
             
-            <router-link :to="{ name: 'ManageProduct', params: { listingCategoryId:form.listing_category_id, id:form.id } }" class="text-gray-900 bg-[#92d9f7] hover:bg-[#92d9f7]/90 focus:ring-4 focus:outline-none focus:ring-[#92d9f7]/50 font-medium rounded-lg text-sm px-5 py-2.5 text-center inline-flex items-center dark:focus:ring-[#92d9f7]/50 mr-1 mb-2">
+            <router-link :to="{ name: 'ManageProduct', params: { listingCategoryId:form.listing_category_id, id:form.id } }" class="text-gray-900 bg-cyan-500 hover:bg-cyan-300 focus:ring-4 focus:outline-none focus:ring-[#92d9f7]/50 font-medium rounded-lg text-sm px-5 py-2.5 text-center inline-flex items-center dark:focus:ring-[#92d9f7]/50 mr-1 mb-2">
                 Edit Product
             </router-link>
         </div>
         <div class="w-full md:w-3/4 py-4">
             <div class="mb-4">
-                <dl class="grid max-w-screen-xl rounded-lg grid-cols-2 gap-8 p-4 mx-auto text-gray-900 sm:grid-cols-3 xl:grid-cols-3 white:text-dark sm:p-8 bg-yellow-200">
+                <dl class="grid max-w-screen-xl rounded-lg grid-cols-4 gap-8 p-4 mx-auto text-gray-900 sm:grid-cols-3 xl:grid-cols-4 white:text-dark sm:p-8 bg-yellow-200">
                     <div class="flex flex-col items-center justify-center">
-                        <dt class="mb-2 text-3xl font-extrabold">{{ form?.rate }}</dt>
-                        <dd class="text-gray-500 dark:text-gray-700">Nightly Rate</dd>
+                        <dt class="mb-2 text-lg font-bold">{{ baseRate }}</dt>
+                        <dd class="text-gray-500 dark:text-gray-700 text-sm font-semibold">Nightly Rate</dd>
                     </div>
                     <div class="flex flex-col items-center justify-center">
-                        <dt class="mb-2 text-3xl font-extrabold">{{ form?.discount }}</dt>
-                        <dd class="text-gray-500 dark:text-gray-700">Discount</dd>
+                        <dt class="mb-2 text-lg font-bold">{{ extraPaxRate }}</dt>
+                        <dd class="text-gray-500 dark:text-gray-700 text-sm font-semibold">Extra Guest</dd>
                     </div>
                     <div class="flex flex-col items-center justify-center">
-                        <dt class="mb-2 text-3xl font-extrabold">{{ form?.max_guest }}</dt>
-                        <dd class="text-gray-500 dark:text-gray-700">Maximum Guest</dd>
+                        <dt class="mb-2 text-lg font-bold">{{ extraBedRate }}</dt>
+                        <dd class="text-gray-500 dark:text-gray-700 text-sm font-semibold">Extra Bed</dd>
                     </div>
+                    <div class="flex flex-col items-center justify-center">
+                        <dt class="mb-2 text-lg font-bold">{{ breakfastRate }}</dt>
+                        <dd class="text-gray-500 dark:text-gray-700 text-sm font-semibold">breakfast Add-on</dd>
+                    </div>
+                    <div class="flex flex-col items-center justify-center">
+                        <dt class="mb-2 text-lg font-bold">{{ form?.min_guest }}</dt>
+                        <dd class="text-gray-500 dark:text-gray-700 text-sm font-semibold">Standard No. of Guest</dd>
+                    </div>
+                    <div class="flex flex-col items-center justify-center">
+                        <dt class="mb-2 text-lg font-bold">{{ form?.max_guest }}</dt>
+                        <dd class="text-gray-500 dark:text-gray-700 text-sm font-semibold">Maximum Guest</dd>
+                    </div>
+                    <div class="flex flex-col items-center justify-center">
+                        <dt class="mb-2 text-lg font-bold">{{ maxExtraBed }}</dt>
+                        <dd class="text-gray-500 dark:text-gray-700 text-sm font-semibold">Maximum Extra Bed</dd>
+                    </div>
+                    <div class="flex flex-col items-center justify-center">
+                        <dt class="mb-2 text-lg font-bold"><span class="text-sm font-normal">Age below</span> {{ form?.free_below_age }}</dt>
+                        <dd class="text-gray-500 dark:text-gray-700 text-sm font-semibold">Free Of Charge</dd>
+                    </div>
+                    
                 </dl>
             </div>
 
             <div>
                 <h2 class="mb-3 text-center text-2xl font-bold">Product Attributes</h2>
                 <p class="mb-8 text-center text-neutral-500 dark:text-neutral-300">
-                    Lorem ipsum dolor sit amet consectetur adipisicing elit. Dolorem,
-                    amet.
+                    What this place offers
                 </p>
                 <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
                     <div class="block h-full rounded-lg bg-gray-200 shadow-[0_2px_15px_-3px_rgba(0,0,0,0.07),0_10px_20px_-2px_rgba(0,0,0,0.04)] dark:bg-neutral-700" v-for="item in groupAttributes">
                         <div class="border-b-2 border-neutral-100 border-opacity-100 p-6 text-center dark:border-opacity-10">
-                            <p class="mb-2 text-sm uppercase">
+                            <p class="text-sm uppercase">
                                 <strong>{{ item.title }}</strong>
                             </p>
                         </div>
 
                         <!-- List -->
-                        <div class="p-6">
+                        <div class="px-4 pb-4">
                             <ol class="list-inside">
-                                <li class="mb-4 flex" v-for="v in item.data">
+                                <li class="mb-4 flex text-normal items-center" v-for="v in item.data">
                                     <template v-if="!item.not_included">
-                                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2"
-                                        stroke="currentColor" class="mr-3 h-5 w-5 text-primary dark:text-primary-400">
+                                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="4"
+                                        stroke="currentColor" class="mr-3 h-4 w-4 text-green-700 dark:text-text-green-400">
                                         <path stroke-linecap="round" stroke-linejoin="round" d="M4.5 12.75l6 6 9-13.5" /></svg>
+                                        {{ v.value  }}
                                     </template>
                                     <template v-else>
-                                        <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" aria-hidden="true" class="mr-3 h-5 w-5 text-primary dark:text-primary-400">
+                                        <svg fill="none" stroke="currentColor" stroke-width="4" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" aria-hidden="true" class="mr-3 h-4 w-4 text-red-600 dark:text-red-400">
                                         <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"></path>
                                         </svg>
+                                        <span class="line-through">{{ v.value  }}</span>
                                     </template>
-                                    {{ v.value  }}
+                                    
                                 </li>
                             </ol>
                         </div>

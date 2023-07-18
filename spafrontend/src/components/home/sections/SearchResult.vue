@@ -2,19 +2,33 @@
 //https://ordinarycoders.com/blog/article/17-tailwindcss-cards
 import { computed } from 'vue';
 const props = defineProps({
-    collection: { type: Array, default: [] },
+    collection: { type: Array, default: null },
     title: { type: String, default: 'Your Search'},
-    subtitle: { type: String, default: 'Lorem ipsum, sung tung xi..'},
+    subtitle: { type: String, default: ''},
 })
 
 const emit = defineEmits(['select']);
 
 const select = (item) => {
-    // console.log("Selected Product:", item);
-    emit('view-details', item );
+    emit('cview-details', item );
+}
+
+const baseRate = computed( () => { 
+    return '₱'+ moneyFormat(form.value.rate);
+});
+
+const moneyFormat = (v) =>{
+    try {
+        if (isNaN(v)) throw "Not a Number" 
+        const fv = parseFloat(v);
+        return fv.toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2});
+    } catch (error) {
+        return "0.00"
+    }
 }
 
 const resultItems = computed(() => {
+    if (props.collection == null) return -1;
     return props.collection.length;
 });
 
@@ -22,12 +36,12 @@ const resultItems = computed(() => {
 
 <template>
     <div class="mb-4 items-center justify-center">
-        <h1 class="font-semibold text-3xl">{{ title }}</h1>
+        <h1 class="font-semibold text-xl">{{ title }}</h1>
         <p>{{ subtitle }}</p>
     </div>
     
     <div class="mb-4" v-if="resultItems==0">
-        No result found...
+        No result found... {{ resultItems }}
     </div>
 
     <div class="truncate cursor-pointer mb-4 flex flex-col rounded-lg bg-white shadow-[0_2px_15px_-3px_rgba(0,0,0,0.07),0_10px_20px_-2px_rgba(0,0,0,0.04)] dark:bg-neutral-700 md:max-w-3x1 md:flex-row" v-for="item in collection" @click="select(item)">
@@ -49,7 +63,7 @@ const resultItems = computed(() => {
                 {{ item.description }}
             </p>
             <div class="pt-4 pb-2">
-                <span class="inline-block bg-gray-200 rounded-full px-3 py-1 text-sm font-semibold text-gray-700 mr-2 mb-2">₱{{ item.rate }} per Night</span>
+                <span class="inline-block bg-gray-200 rounded-full px-3 py-1 text-sm font-semibold text-gray-700 mr-2 mb-2">₱{{ moneyFormat(item.rate) }} per Night</span>
             </div>
         </div>
     </div>

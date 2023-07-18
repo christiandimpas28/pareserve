@@ -1,11 +1,13 @@
 <script setup>
 import { onMounted, ref } from 'vue';
+import axios from "axios";
 // import { useHelperStore } from '../stores/index';
 import { useAuthStore } from '../stores/auth';
 import { useRouter } from 'vue-router';
 import Navigation from '../components/home/Navigation.vue';
 import SearchCategory from '../components/home/sections/searchCategoty.vue';
 import SearchForm from '../components/home/sections/SearchForm.vue';
+import ExploreListLg from '../components/home/sections/ExploreListLg.vue';
 
 
     // import Hero from '../components/home/sections/HeroFrom.vue'
@@ -27,6 +29,10 @@ const showMain = ref(true);
 const gridRows = ref([0,3,6,9,12,15]);
 const topDestinations = ref([]);
 const searchParam = ref({});
+const homeCollection = ref([]);
+const homeListings = ref([]);
+const homeProducts = ref([]);
+const isFetching = ref(false);
 
 const displayCollection = (idx) => {
     const new_coll = [];
@@ -43,6 +49,12 @@ onMounted(() => {
     authStore.getUser('Home');
     // console.log("HOME: ", router.currentRoute.value)
     if (router.currentRoute.value.name === 'Home') showMain.value=true;
+
+    fetchData('/api/products').catch(error => {
+        error.message; // 'An error has occurred: 404'
+        console.log("fetchData Error: ", error.message);
+    }); 
+
 
     topDestinations.value = [
         { img: 'http://localhost:8000/uploads/destinations/enchanted.jpg', name: 'Hinatuan Enchanted River', query: 'enchanted' },
@@ -81,7 +93,7 @@ const getSearch = (param) => {
     router.push({ name: 'ListingsSearch', query: { query: val, start: null, end: null } })
 }
 
-    // router.push({ name: 'Listings' });
+// router.push({ name: 'Listings' });
 
 router.beforeEach((to, from) => { 
     console.log("from", from);
@@ -89,6 +101,51 @@ router.beforeEach((to, from) => {
     showMain.value= to.name==='Home';
 });
 
+const fetchData = async (get_url) => {
+    try {
+        
+        const response = await axios.get(get_url);
+        if (!response) {
+            const message = 'An error has occured: ${response.status}';
+            throw new Error(message);
+        }
+        
+        homeCollection.value = await response.data.data;
+        // console.log("HOME homeCollection.value" , response.data)
+        // action.value ='POST';
+        // merchant.value = homeCollection.value.id;
+        // homeProducts.value =[];
+        // litings.value = [];
+        // console.log('My Products', homeCollection.value);
+        if (homeCollection.value && homeCollection.value.length>0){
+            homeCollection.value.forEach( (item, index) => {
+                if (item.listings && item.listings.length>0) {
+                    homeListings.value = homeListings.value.concat(item.listings);
+                    // homeListings.value.push(item.listings);
+                }
+            });
+        }
+
+        console.log("HOME LISTINGS" , homeListings.value)
+        if (homeListings.value.length>0){
+            homeListings.value.forEach( (item, index) => {
+                if (item.products && item.products.length>0) {
+                    item.products.forEach( (p, i) => {
+                        homeProducts.value.push(p);
+                    });
+                    // homeProducts.value = homeProducts.value.concat(item.products);
+                    // products.value.push(item.products);
+                }
+            });
+        }
+
+        console.log("HOME PRODUCTS", homeProducts.value);
+        // console.log("HOME products", products.value);
+        isFetching.value = false;
+    } catch (error) {
+        console.log("onMounted fetchData" ,error);
+    }
+}
 
 </script>
 
@@ -111,12 +168,23 @@ router.beforeEach((to, from) => {
 
 
                 <div class="mb-4 mt-8 items-center justify-center">
+                    
                     <div class="mb-4">
-                        <h1 class="font-semibold text-3xl">Trending destinations</h1>
-                        <p>Most popular choices for travellers from the Philippines</p>
+                        <div class="flex-1">
+                            <ExploreListLg 
+                                :collection="homeProducts"
+                                :title="'Most Visited Hotels'"
+                                :subtitle="'Most popular choices for travellers from the Philippines'"
+                            />
+                        </div>
                     </div>
+
+                    <!-- <div class="mb-4">
+                        <h1 class="font-semibold text-3xl">Most Visited Hotels</h1>
+                        <p>Most popular choices for travellers from the Philippines</p>
+                    </div> -->
                     <div class="mb-4">
-                        <div class="grid grid-cols-2 md:grid-cols-3 gap-4">
+                        <!-- <div class="grid grid-cols-2 md:grid-cols-3 gap-4">
                             <div class="grid gap-4" v-for="item in gridRows">
                                 <div v-for="img in displayCollection(item)" @click="search(img)" class="cursor-pointer relative">
                                     <img class="h-auto max-w-full rounded-lg" :src="img?.img" :alt="img?.name" />
@@ -125,8 +193,7 @@ router.beforeEach((to, from) => {
                                 
                             </div>
                             
-                        </div>
-
+                        </div> -->
                     </div>
                 </div>
 

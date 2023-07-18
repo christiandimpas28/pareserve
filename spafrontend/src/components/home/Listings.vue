@@ -9,7 +9,7 @@ import ExploreListLg from './sections/ExploreListLg.vue';
 import Hero from './sections/HeroFrom.vue';
 import SearchCategory from './sections/searchCategoty.vue';
 
-const router = useRouter()
+const router = useRouter();
 
 const collection = ref([]);
 const litings = ref([]);
@@ -22,7 +22,7 @@ const isFetching = ref(true);
 onMounted(() => {
     fetchData('/api/products').catch(error => {
         error.message; // 'An error has occurred: 404'
-        console.log("fetchData Error: ", error.message);
+        // console.log("fetchData Error: ", error.message);
     }); 
 
     exploreListSmCollection.value = [
@@ -49,7 +49,6 @@ watch(() => products.value, (c, b) => {
 });
 
 const search = async (param) => {
-    console.log("Search data", param);
     const val = (param.query !== undefined) ? encodeURIComponent(param.query):'';  
     const start = encodeURIComponent(param.start)  
     const end = encodeURIComponent(param.end)  
@@ -85,7 +84,6 @@ const fetchData = async (get_url) => {
         }
         
         collection.value = await response.data.data;
-        console.log("collection.value" , collection.value)
         // action.value ='POST';
         // merchant.value = collection.value.id;
         products.value =[];
@@ -128,7 +126,6 @@ const fetchData = async (get_url) => {
                     :collection="products" 
                     :title="'Stay at our top unique properties'" 
                     :subtitle="'Lorem ipsum sum sum..'" 
-                    @view-details="viewDetails"
                 />
             </div>
             <div>

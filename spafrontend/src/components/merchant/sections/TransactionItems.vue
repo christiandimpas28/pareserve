@@ -18,8 +18,8 @@ const isCheckout = (item) => {
     const checkout_date = new Date(item.to);
     const todays_date = new Date();
 
-    console.log('Today Date:', todays_date, ' Checkout:', checkout_date);
-    console.log("Condition: ", todays_date >= checkout_date);
+    // console.log('Today Date:', todays_date, ' Checkout:', checkout_date);
+    // console.log("Condition: ", todays_date >= checkout_date);
     if (item.booking_status === 'Booked' && todays_date >= checkout_date) {
         return true;
     }

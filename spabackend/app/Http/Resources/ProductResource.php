@@ -43,12 +43,18 @@ class ProductResource extends JsonResource
             'slug' => $this->slug,
             'description' => $this->description,
             'max_guest' => $this->max_guest,
+            'min_guest' => $this->min_guest,
             'photos' => $this->photos,
             'enabled' => $this->enabled,
             'rate' => $this->rate,
+            'extra_pax_rate' => $this->extra_pax_rate,
+            'extra_bed_rate' => $this->extra_bed_rate,
+            'breakfast_rate' => $this->breakfast_rate,
+            'free_below_age' => $this->free_below_age,
             'discount' => $this->discount,
             'listing_category_id' => $this->listing_category_id,
             'product_attributes' => ProductAttributesResource::collection($this->productAttributes),
+            'reviews' => ProductReviewsResource::collection($this->productReviews),
         ];
     }
 }

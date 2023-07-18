@@ -101,20 +101,20 @@ class BooksController extends Controller
         $booking = $this->checkExistingBooking($request, $product->id, array('Pending'));
         
         //4. Recompute Charges
-        $rate_per_night = (float) $product->rate;
-        $days = (int) $request->days; 
-        $service_fee_rate = (float) $request->service_fee_rate;
+        // $rate_per_night = (float) $product->rate;
+        // $days = (int) $request->days; 
+        // $service_fee_rate = (float) $request->service_fee_rate;
 
-        $sub_total = (float) ($rate_per_night * $days);
-        $service_fee = (float) ($sub_total * $service_fee_rate);
-        $total = $sub_total+$service_fee;
+        // $sub_total = (float) ($rate_per_night * $days);
+        // $service_fee = (float) ($sub_total * $service_fee_rate);
+        // $total = $sub_total+$service_fee;
 
-        $request['rate'] = $rate_per_night;
-        $request['qty'] = $days;
-        $request['days'] = $days;
-        $request['service_fee_rate'] = $service_fee_rate;
-        $request['service_fee'] = $service_fee;
-        $request['total'] = $total;
+        // $request['rate'] = $rate_per_night;
+        // $request['qty'] = $days;
+        // $request['days'] = $days;
+        // $request['service_fee_rate'] = $service_fee_rate;
+        // $request['service_fee'] = $service_fee;
+        // $request['total'] = $total;
 
         $request['user_id'] = $user->id;
 
@@ -127,8 +127,6 @@ class BooksController extends Controller
             $booking->update($request->all());
             return $this->success($booking, 'Success', 200);
         }
-        
-
     }
 
     /**
@@ -159,12 +157,19 @@ class BooksController extends Controller
 
         $transactions = DB::table('books')
             ->leftJoin('booked_summaries', 'books.booked_id', '=', 'booked_summaries.id')
+            ->leftJoin('product_review', 'books.id', '=', 'product_review.book_id')
             ->where('books.user_id', '=', $user->id)
             ->orderBy('books.created_at', 'desc')
             ->get([
                 'books.id AS books_id', 
                 'books.*',
-                'booked_summaries.*'
+                'booked_summaries.*',
+                'product_review.id AS product_review_id',
+                'product_review.book_id AS product_review_book_id',
+                'product_review.product_id AS product_review_product_id',
+                'product_review.photos AS product_review_photos',
+                'product_review.rating AS product_review_rating',
+                'product_review.review AS product_review_review',
             ]);
 
         // $transactions = Books::select('books.*, booked_summaries.*')

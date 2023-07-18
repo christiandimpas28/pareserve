@@ -109,7 +109,8 @@ fill="#000000" stroke="none">
         </li>
         </template>
         <li v-if="userViewState==2">
-          <a @click.prevent="userAccount()" class="cursor-pointer">{{ authStore.user?.name }}</a>
+          <span class="font-normal">Welcome to PaReserve, </span>
+          <a @click.prevent="userAccount()" class="cursor-pointer text-[#1A7D7A]">{{ authStore.user?.name }}</a>
         </li>
       </ul>
     </div>

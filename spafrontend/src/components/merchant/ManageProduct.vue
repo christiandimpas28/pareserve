@@ -82,7 +82,12 @@ const submitForm = async (data) => {
         formData.append('slug', data.inputData.slug);
         formData.append('description', data.inputData.description);
         formData.append('max_guest', data.inputData.max_guest);
+        formData.append('min_guest', data.inputData.min_guest);
         formData.append('rate', data.inputData.rate);
+        formData.append('extra_pax_rate', data.inputData.extra_pax_rate);
+        formData.append('extra_bed_rate', data.inputData.extra_bed_rate);
+        formData.append('breakfast_rate', data.inputData.breakfast_rate);
+        formData.append('free_below_age', data.inputData.free_below_age);
         formData.append('discount', data.inputData.discount);
         formData.append('enabled', data.inputData.enabled);
         formData.append('listing_category_id', data.inputData.listing_category_id);
@@ -190,7 +195,7 @@ const deleteAttr = async (item)=> {
 }
 
 const addAttribute = async (item)=> {
-    console.log("addAttribute", item.data, "attrForm", attrForm);
+    // console.log("addAttribute", item.data, "attrForm", attrForm);
     // return true;
     // partner/product/attr
     try {
@@ -214,7 +219,11 @@ const addAttribute = async (item)=> {
         // console.log("Primary Form", form.value);
         toastMessage.value = "Record was successfully created.";
         showToast(1);
-        router.go();
+        // router.go();
+        fetchData().catch(error => {
+            error.message; // 'An error has occurred: 404'
+            console.log("fetchData Error: ", error.message);
+        }); 
         // activateCleaner();
         // router.push({ name: 'ViewPartnersProduct', params: {listingCategoryId:form.value.listing_category_id, id: form.value.id } });
     } catch (error) {
@@ -233,7 +242,7 @@ const addAttribute = async (item)=> {
                 Manage your product
             </h1>
             <p class="my-4 text-md text-gray-700">
-                Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s
+                ...
             </p>
         </div>
         <div class="w-full md:w-3/4 p-4">
@@ -252,7 +261,7 @@ const addAttribute = async (item)=> {
         <div class="w-full md:w-1/4 p-4">
             <div class="mb-4">
                 <h2 class="text-title-md2 font-bold text-black white:text-dark">What this place offers</h2>
-                <p>Lorem Ipsum has been the industry's standard...</p>
+                <p>Product features...</p>
             </div>
             <div class="mb-4">
                 <AttributeForm 

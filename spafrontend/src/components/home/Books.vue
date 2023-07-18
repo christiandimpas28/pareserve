@@ -18,6 +18,8 @@ const dateValue = ref([]);
 const primaryPhoto = ref('http://localhost:8000/uploads/Image_not_available.png');
 const paymentActionTitle = ref('Pay Now via G-Cash');
 const paymentCheckout = ref({});
+const hasAddons = ref(false);
+const addOnsInfo = ref([]);
 
 onMounted(() => {
     // console.log("params", router.currentRoute.value.params);
@@ -86,19 +88,38 @@ const primaryPhotoView = (img) => {
 }
 
 const priceDetails = () => {
-    let subtotal =  parseFloat(booking.value.rate) * parseInt(booking.value.days); 
-    const adminFee_str = parseFloat(booking.value.service_fee).toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2});
-    const subtotal_str = parseFloat(subtotal).toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2});
-    subTotals.value.push(
-        {
-            label: '₱'+ (booking.value.rate).toLocaleString() +'x'+ booking.value.days +' Night'+ (booking.value.days==1?'':'s'),
-            value: subtotal_str,
-        },
-        {
-            label: 'PaReserve Service Fee',
-            value: adminFee_str,
+    // let subtotal =  parseFloat(booking.value.rate) * parseInt(booking.value.days); 
+    // const adminFee_str = parseFloat(booking.value.service_fee).toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2});
+    // const subtotal_str = parseFloat(subtotal).toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2});
+    // subTotals.value.push(
+    //     {
+    //         label: '₱'+ (booking.value.rate).toLocaleString() +'x'+ booking.value.days +' Night'+ (booking.value.days==1?'':'s'),
+    //         value: subtotal_str,
+    //     },
+    //     {
+    //         label: 'PaReserve Service Fee',
+    //         value: adminFee_str,
+    //     }
+    // );
+    if (booking.value.subtotals!=null){
+        subTotals.value = JSON.parse(booking.value.subtotals);
+
+        //Check if has addOns
+        if (Array.isArray(subTotals.value)){
+            for(let item of subTotals.value){
+                if (item.name.toLowerCase() === 'servicefee' || item.name.toLowerCase() === 'rate') continue;
+                addOnsInfo.value.push({
+                    name: item.name,
+                    label: item.label,
+                    qty: item.raw.qty
+                });
+            }
         }
-    );
+
+        hasAddons.value = addOnsInfo.value.length>0;
+
+        console.log("addOnsInfo", addOnsInfo);
+    }
 
     const new_total_str = parseFloat(booking.value.total).toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2});
     totals.value = {
@@ -180,12 +201,19 @@ const pay = async () => {
                     <div class="mb-4">
                         <div class="pt-2 pb-1 inline-grid gap-2 grid-cols-2 w-full text-md">
                             <div class="text-start font-semibold">Total length of stay</div>
-                            <div class="text-start font-semibold">No. of Guest</div>
+                            <div class="text-start font-semibold">Standard No. of Guest</div>
                         </div>
                         <div class="inline-grid gap-2 grid-cols-2 w-full text-md">
                             <div class="text-start font-normal">{{ booking.days }} night(s)</div>
                             <div class="text-start font-normal">{{ booking.number_of_guest }}</div>
                         </div>
+                    </div>
+
+                    <div v-show="hasAddons" class="mb-4">
+                        <h2 class="font-semibold text-md mb-4">Add-ons</h2>
+                        <ul>
+                            <li v-for="item in addOnsInfo">{{ item.label  }}</li>
+                        </ul>
                     </div>
 
                     <div class="mb-4 mt-10 rounded-lg bg-gray-200 p-6">

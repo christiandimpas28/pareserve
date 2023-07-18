@@ -18,9 +18,14 @@ const props = defineProps({
         slug: null,
         description: null,
         max_guest: 2,
+        min_guest: 2,
         enabled: 1,
         discount: 0.0,
         rate: 0.0,
+        extra_pax_rate: 0.0,
+        extra_bed_rate: 0.0,
+        breakfast_rate: 0.0,
+        free_below_age: 12,
         photos: [],
         product_attributes: []
     } 
@@ -178,7 +183,7 @@ const close = () => {
                     <div class="-mx-3 flex flex-wrap">
                         <div class="w-full px-3 sm:w-1/2">
                             <div class="mb-4">
-                                <label for="rate" class="mb-3 block text-base font-medium text-[#07074D]">Rate</label>
+                                <label for="rate" class="mb-3 block text-base font-medium text-[#07074D]">Per Night Rate</label>
                                 <input type="number" v-model="form.rate" name="rate" id="rate" required maxlength="10"
                                 placeholder="Nightly Rate" class="w-full rounded-md border border-[#e0e0e0] bg-white py-3 px-3 text-base font-medium text-[#6B7280] outline-none focus:border-[#6A64F1] focus:shadow-md" 
                                 />
@@ -193,20 +198,51 @@ const close = () => {
                             </div>
                         </div>
                     </div>
+                    <p class="mt-6 mb-4 text-base font-medium">Add-on rates</p>
+                    <div class="-mx-3 flex flex-wrap mb-4">
+                        <div class="w-full px-3 sm:w-1/3">
+                            <label for="breakfast_rate" class="mb-3 block text-base font-medium text-[#07074D]">Breakfast</label>
+                            <input type="text" v-model="form.breakfast_rate" name="breakfast_rate" id="breakfast_rate" required maxlength="6"
+                                placeholder="Fixed rate e.g.: 0.0" class="w-full rounded-md border border-[#e0e0e0] bg-white py-3 px-3 text-base font-medium text-[#6B7280] outline-none focus:border-[#6A64F1] focus:shadow-md" 
+                            />
+                        </div>
+                        <div class="w-full px-3 sm:w-1/3">
+                            <label for="extra_bed_rate" class="mb-3 block text-base font-medium text-[#07074D]">Extra Bed</label>
+                            <input type="text" v-model="form.extra_bed_rate" name="extra_bed_rate" id="extra_bed_rate" required maxlength="6"
+                                placeholder="Fixed rate e.g.: 0.0" class="w-full rounded-md border border-[#e0e0e0] bg-white py-3 px-3 text-base font-medium text-[#6B7280] outline-none focus:border-[#6A64F1] focus:shadow-md" 
+                            />
+                        </div>
+                        <div class="w-full px-3 sm:w-1/3">
+                            <label for="extra_pax_rate" class="mb-3 block text-base font-medium text-[#07074D]">Extra Pax</label>
+                            <input type="text" v-model="form.extra_pax_rate" name="extra_pax_rate" id="extra_pax_rate" required maxlength="6"
+                                placeholder="Fixed rate e.g.: 0.0" class="w-full rounded-md border border-[#e0e0e0] bg-white py-3 px-3 text-base font-medium text-[#6B7280] outline-none focus:border-[#6A64F1] focus:shadow-md" 
+                            />
+                        </div>
+                        
+                    </div>
                 </div>
                 <div class="mb-4">
                     <div class="-mx-3 flex flex-wrap">
-                        <div class="w-full px-3 sm:w-1/2">
-                            <div class="mb-4">
-                                <label for="max_guest" class="mb-3 block text-base font-medium text-[#07074D]">Max Guest</label>
-                                <input type="number" v-model="form.max_guest" name="max_guest" id="max_guest" required
-                                placeholder="Max Guest" class="w-full rounded-md border border-[#e0e0e0] bg-white py-3 px-3 text-base font-medium text-[#6B7280] outline-none focus:border-[#6A64F1] focus:shadow-md" 
-                                />
-                            </div>
+                        <div class="w-full px-3 sm:w-1/3 mb-4">
+                            <label for="min_guest" class="mb-3 block text-base font-medium text-[#07074D]">Standard No. Of Guest</label>
+                            <input type="number" v-model="form.min_guest" name="min_guest" id="min_guest" required
+                            placeholder="Standard Number of Guest" class="w-full rounded-md border border-[#e0e0e0] bg-white py-3 px-3 text-base font-medium text-[#6B7280] outline-none focus:border-[#6A64F1] focus:shadow-md" 
+                            />
                         </div>
-                        <div class="w-full px-3 sm:w-1/2">
+                        <div class="w-full px-3 sm:w-1/3 mb-4">
+                            <label for="max_guest" class="mb-3 block text-base font-medium text-[#07074D]">Max Guest</label>
+                            <input type="number" v-model="form.max_guest" name="max_guest" id="max_guest" required
+                            placeholder="Max Guest" class="w-full rounded-md border border-[#e0e0e0] bg-white py-3 px-3 text-base font-medium text-[#6B7280] outline-none focus:border-[#6A64F1] focus:shadow-md" 
+                            />
+                        </div>
 
+                        <div class="w-full px-3 sm:w-1/3 mb-4">
+                            <label for="free_below_age" class="mb-3 block text-base font-medium text-[#07074D]">No Charge on Age Below</label>
+                            <input type="number" v-model="form.free_below_age" name="free_below_age" id="free_below_age" required
+                            placeholder="Enter Age" class="w-full rounded-md border border-[#e0e0e0] bg-white py-3 px-3 text-base font-medium text-[#6B7280] outline-none focus:border-[#6A64F1] focus:shadow-md" 
+                            />
                         </div>
+                        
                         <!-- <div class="w-full px-3 sm:w-1/2">
                             <div class="flex items-center mb-4 mt-4">
                                 <input id="checked-checkbox" type="checkbox" v-model="form.enabled" class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-500 dark:border-gray-100">
@@ -249,6 +285,9 @@ const close = () => {
                         <button @click.prevent="deleteProduct()" class="text-white mr-4 bg-[#F77E7E] hover:bg-[#f53e3e] focus:ring-4 focus:outline-none focus:ring-cyan-300 font-medium rounded-lg text-sm w-auto px-5 py-2.5 text-center dark:bg-[#F77E7E] dark:hover:bg-[#f53e3e] dark:focus:ring-[#F77E7E]">
                             Delete
                         </button>
+                        <router-link :to="{ name: 'ViewPartnersProduct', params: { listingCategoryId: form.listing_category_id, id:form.id }}" class="text-gray-900 bg-[#F7BE38]/80 hover:bg-[#F7BE38]/90 focus:ring-4 focus:outline-none focus:ring-[#F7BE38]/50 font-medium rounded-lg text-sm px-5 py-2.5 text-center inline-flex items-center dark:focus:ring-[#F7BE38]/50 mr-1 mb-2">
+                            Preview
+                        </router-link>
                     </template>
                     
                     <button @click.prevent="close()" class="text-slate-400 hover:text-sky-400 content-stretch">
@@ -261,3 +300,4 @@ const close = () => {
         </div>
     </div>
 </template>
+

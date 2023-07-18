@@ -1,5 +1,6 @@
 <script setup>
 import { toRef,ref  } from 'vue'
+import WriteReviewForm from './WriteReviewForm.vue';
 const props = defineProps({
     collection: { type: Array, default: [] },
     title: { type: String, default: 'Booking Details'},
@@ -13,6 +14,34 @@ const formatFigure = (val) => {
 }
 
 toRef(() => props.view);
+
+const reviewForm = ref({});
+const showModal = ref(false);
+const modalTitle = ref('Write Review');
+
+const hasReview = (item) => {
+    console.log("hasReview: ", item);
+    if (item.product_review_id === null) return false;
+    return true;
+}
+
+const writeReview = (item) => {
+    console.log("Write Review: ", item);
+    reviewForm.value = {
+        book_id: item.books_id,
+        user_id: item.user_id,
+        product_id: item.product_id,
+        rating: null,
+        photos: null,
+        review: null,
+    }
+    showModal.value = !showModal.value;
+}
+
+const toggleModal = ()=>{
+    showModal.value = !showModal.value;
+}
+
 
 </script>
 <template>
@@ -70,6 +99,8 @@ toRef(() => props.view);
                         <th scope="col" class="px-6 py-4">Booking Status</th>
                         <th scope="col" class="px-6 py-4">Payment Status</th>
                         <th scope="col" class="px-6 py-4">Date</th>
+                        <th scope="col" class="px-6 py-4">Review</th>
+                        <th scope="col" class="px-6 py-4">Report</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -83,9 +114,46 @@ toRef(() => props.view);
                         <td class="whitespace-nowrap px-6 py-4">{{ item.booking_status }}</td>
                         <td class="whitespace-nowrap px-6 py-4">{{ item.payment_status }}</td>
                         <td class="whitespace-nowrap px-6 py-4">{{ item.created_at }}</td>
+                        <td class="whitespace-nowrap px-6 py-4">
+                            <button @click="writeReview(item)" class="font-semibold text-xs px-2 py-2 bg-yellow-300 rounded-lg border-b-2 border-yellow-600" v-if="!hasReview(item)">Write Review</button>
+                        </td>
                     </tr>
                 </tbody>
             </table>
         </div>
     </div>
+
+
+    <div v-if="showModal" class="overflow-x-hidden overflow-y-auto fixed inset-0 z-50 outline-none focus:outline-none justify-center items-center flex">
+      <div class="relative w-auto my-6 mx-auto max-w-6xl">
+        <!--content-->
+        <div class="border-0 rounded-lg shadow-lg relative flex flex-col w-full bg-white outline-none focus:outline-none">
+          <!--header-->
+          <div class="flex items-start justify-between p-5 border-b border-solid border-slate-200 rounded-t">
+            <h3 class="text-3xl font-semibold">
+              {{ modalTitle }}
+            </h3>
+            <button class="p-1 ml-auto bg-transparent border-0 text-black opacity-5 float-right text-3xl leading-none font-semibold outline-none focus:outline-none" v-on:click="toggleModal()">
+              <span class="bg-transparent text-gray-900 opacity-5 h-6 w-6 text-2xl block outline-none focus:outline-none">
+                X
+              </span>
+            </button>
+          </div>
+          <!--body-->
+          <div class="relative p-6 flex-auto">
+            <WriteReviewForm :form="reviewForm"></WriteReviewForm>
+          </div>
+          <!--footer-->
+          <div class="flex items-center justify-end p-6 border-t border-solid border-slate-200 rounded-b">
+            <button class="text-teal-500 bg-transparent border border-solid border-teal-500 hover:bg-teal-500 hover:text-white active:bg-teal-600 font-bold uppercase text-sm px-4 py-2 rounded outline-none focus:outline-none mr-1 mb-1 ease-linear transition-all duration-150" type="button" v-on:click="toggleModal()">
+              Close
+            </button>
+            <!-- <button class="text-cyan-500 background-transparent font-bold uppercase px-6 py-2 text-sm outline-none focus:outline-none mr-1 mb-1 ease-linear transition-all duration-150" type="button" v-on:click="toggleModal()">
+              Save Changes
+            </button> -->
+          </div>
+        </div>
+      </div>
+    </div>
+    <div v-if="showModal" class="opacity-25 fixed inset-0 z-40 bg-black"></div>
 </template>

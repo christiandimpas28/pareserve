@@ -29,7 +29,8 @@ class Books extends Model
         'total',
         'booking_status',
         'user_id',
-        'booked_id',       
+        'booked_id',
+        'subtotals',  
     ];
 
     public function user()
