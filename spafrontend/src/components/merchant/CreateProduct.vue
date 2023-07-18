@@ -48,7 +48,12 @@ const submitForm = async (data) => {
         formData.append('slug', data.inputData.slug);
         formData.append('description', data.inputData.description);
         formData.append('max_guest', data.inputData.max_guest);
+        formData.append('min_guest', data.inputData.min_guest);
         formData.append('rate', data.inputData.rate);
+        formData.append('extra_pax_rate', data.inputData.extra_pax_rate);
+        formData.append('extra_bed_rate', data.inputData.extra_bed_rate);
+        formData.append('breakfast_rate', data.inputData.breakfast_rate);
+        formData.append('free_below_age', data.inputData.free_below_age);
         formData.append('discount', data.inputData.discount);
         formData.append('enabled', data.inputData.enabled);
         formData.append('listing_category_id', data.inputData.listing_category_id);

@@ -9,12 +9,12 @@ onMounted(() => {
 
     categories.value = [
         { img: 'http://localhost:8000/uploads/categories/rooms.jpg', name: 'Rooms', query: 'room' },
-        { img: 'http://localhost:8000/uploads/categories/beach-front.jpg', name: 'Beach Front', query: 'beach' },
+        // { img: 'http://localhost:8000/uploads/categories/beach-front.jpg', name: 'Beach Front', query: 'beach' },
         { img: 'http://localhost:8000/uploads/categories/bed-n-break.jpg', name: 'Bed & Breakfast', query: 'Bed & Breakfast' },
-        { img: 'http://localhost:8000/uploads/categories/island.jpg', name: 'Island', query: 'island' },
+        // { img: 'http://localhost:8000/uploads/categories/island.jpg', name: 'Island', query: 'island' },
         { img: 'http://localhost:8000/uploads/categories/city.jpg', name: 'City', query: 'city' },
         // { img: 'http://localhost:8000/uploads/categories/camping.jpg', name: 'Camping', query: 'camping' },
-        { img: 'http://localhost:8000/uploads/categories/mountain-resort.jpg', name: 'Mountain Resort', query: 'mountain' },
+        // { img: 'http://localhost:8000/uploads/categories/mountain-resort.jpg', name: 'Mountain Resort', query: 'mountain' },
         { img: 'http://localhost:8000/uploads/categories/pools.jpg', name: 'Pools', query: 'pool' },
         // { img: 'http://localhost:8000/uploads/categories/homes.jpg', name: 'Homes', query: 'home' },
         // { img: 'http://localhost:8000/uploads/categories/tiny-house.jpg', name: 'Tiny House', query: 'tiny' },
