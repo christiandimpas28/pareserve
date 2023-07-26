@@ -17,6 +17,10 @@ class Merchant extends Model
         'bus_contact_no',
         'bus_email',
         'bus_address',
+        'documents',
+        'status',
+        'status_remarks',
+        'terms_agreed_at',
         'user_id',
     ];
 

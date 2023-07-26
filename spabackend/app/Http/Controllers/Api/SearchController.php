@@ -36,6 +36,8 @@ class SearchController extends Controller
             "products.*", 
         )
         ->leftJoin("listing_categories", "listing_categories.id", "=", "products.listing_category_id")
+        ->where("products.enabled",1)
+        ->where("listing_categories.enabled",1)
         ->where(
             // DB::raw("CONCAT(products.name,' ',listing_categories.category,' ',listing_categories.address,' ',listing_categories.city)"), 
             DB::raw("CONCAT(products.name,' ',products.description,' ',listing_categories.name,' ',listing_categories.category,' ',listing_categories.address,' ',listing_categories.city)"), 
@@ -45,12 +47,15 @@ class SearchController extends Controller
         
         // dd(DB::getQueryLog());
         // dd($products);
-        $products->load('listingCategory', 'productAttributes');
+        $products->load('listingCategory', 'productAttributes', 'productReviews');
         return $this->success($products, 'Success', 200);
     }
 
     public function viewProduct(Request $request, Product $product, $slug) {
-        $product->load('listingCategory', 'productAttributes');
-        return $this->success($product, 'Success', 200);
+        // Entity::where('id', $id)->with('relation1.subrelation1', 'relation1.subrelation2', 'relation2.subrelation1', 'relation2.subrelation2')->get();
+        // Product::where('id', $product->id)->with('ListingCategory.Merchant')->get();
+        $selected_product =Product::where('id', $product->id)->first();
+        $selected_product->load('listingCategory', 'productAttributes', 'productReviews.user');
+        return $this->success($selected_product, 'Success', 200);
     }
 }

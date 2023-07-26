@@ -8,10 +8,10 @@ import VueTailwindDatepicker from 'vue-tailwind-datepicker';
 import ProductImages from './sections/ProductImages.vue';
 import SimpleToast from '../SimpleToast.vue';
 import Ratings from "./sections/Ratings.vue";
+import Reviews from "./sections/Reviews.vue";
 
 const router = useRouter()
 const authStore = useAuthStore();
-
 
 const fee_rate = 0.03;
 
@@ -25,7 +25,7 @@ const highlights = ref([]);
 const isFetching = ref(false);
 const addOnsView = ref(false);
 const max_extra = ref(0);
-const pax_remain = ref(-1);
+const reviewsCollection = ref([]);
 
 const no_of_guest = ref(1);
 const addOnsRequest = ref({
@@ -360,52 +360,131 @@ watch(() => dateValue.value, (c, b) => {
     // console.log("Date Diff:", );
     let days = DateDiff.inDays(new Date(c[0]), new Date(c[1]));
 
+    // const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
+    const options = { year: 'numeric', month: 'numeric', day: 'numeric' }
+    let currecnt_date = new Date();
+    let checkin_date = new Date(c[0]);
+    let discount_days = DateDiff.inDays(currecnt_date, checkin_date);
+    if (discount_days>0) discount_days+=1;
+
+    // currecnt_date = currecnt_date.toLocaleDateString("en-US", options)
+    // checkin_date = checkin_date.toLocaleDateString("en-US", options)
+    console.log("Current Date: ", currecnt_date, " Checkin Date: ", checkin_date, " DIFF:", discount_days);
+
     if (product.value && product.value.rate!== undefined) {
-        subTotals.value.length=0;
+        
+        let rate_for_computation = product.value.rate;
+
+        //Early Discounts 
+        if (hasEarlyDiscount.value ===true && discount_days>= product.value.listing_category.discount_condition) {
+            isDiscountConditioMet.value = true;
+            if (discountType.value==='%'){
+                let i_p = discountRate.value/100;
+                let p = product.value.rate * i_p;
+                discountAmount.value = product.value.rate-p;
+                console.log("Computation: /100=", i_p, " minus=", p);
+            } else {
+                discountAmount.value = product.value.rate-discountRate.value;
+            }
+            console.log("Current rate: ", product.value.rate,"New rate: ", discountAmount.value);
+            rate_for_computation = discountAmount.value;
+        } else {
+            isDiscountConditioMet.value = false;
+            discountAmount.value=0;
+        }
+
+        
+
+        
+        // Clear Add-ons
+        // removeArrByName(subTotals.value, 'rate');
+        // removeArrByName(subTotals.value, 'servicefee');
+        // removeArrByName(subTotals.value, 'children');
+        // removeArrByName(subTotals.value, 'extrabed');
+        // removeArrByName(subTotals.value, 'adult');
+        // removeArrByName(subTotals.value, 'breakfast');
+
+        // addOnsRequest.value.bed =0;
+        // addOnsRequest.value.breakfast=0;
+        // addOnsRequest.value.adult=0;
+        // addOnsRequest.value.children_age =0;
+        // addOnsRequest.value = {
+        //     bed:0,
+        //     breakfast: 0,
+        //     adult: 0,
+        //     children_age: 0
+        // }
+        
+
+        // subTotals.value.length=0;
+        // subTotals.value = [];
+        
         days = days==0? 1 : days;
-        let subtotal =  parseFloat(product.value.rate) * parseInt(days); 
+        let subtotal =  parseFloat(rate_for_computation) * parseInt(days); 
         let adminFee = subtotal * fee_rate;
         const adminFee_str = parseFloat(adminFee).toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2});
         const subtotal_str = parseFloat(subtotal).toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2});
-        subTotals.value.push(
-            {
-                index: 0,
-                name: 'rate',
-                label: '₱'+ (product.value.rate).toLocaleString() +'x'+ days+' Night'+ (days==1?'':'s'),
-                value: subtotal_str,
-                key: 1,
-                raw: {
-                    rate: product.value.rate,
-                    qty: days,
-                    total: subtotal,
+
+        if (subTotals.value.length==0){
+            subTotals.value.push(
+                {
+                    index: 0,
+                    name: 'rate',
+                    label: '₱'+ (rate_for_computation).toLocaleString() +'x'+ days+' Night'+ (days==1?'':'s'),
+                    value: subtotal_str,
+                    key: 1,
+                    raw: {
+                        rate: rate_for_computation,
+                        qty: days,
+                        total: subtotal,
+                    }
+                },
+                {
+                    index: 3,
+                    name: 'servicefee',
+                    label: 'Service Fee',
+                    value: adminFee_str,
+                    key: 2,
+                    raw: {
+                        rate: fee_rate,
+                        qty: 1,
+                        total: adminFee,
+                    }
                 }
-            },
-            {
-                index: 3,
-                name: 'servicefee',
-                label: 'Service Fee',
-                value: adminFee_str,
-                key: 2,
+            );
+
+            let new_total = subTotals.value.reduce(function (prev, cur) {
+                return parseFloat(prev) + parseFloat(String(cur.value).replace(/,/g,''));
+            }, 0);
+            const new_total_str = new_total.toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2});
+
+            totals.value = {
+                label: "Total",
+                value: new_total_str,
                 raw: {
-                    rate: fee_rate,
-                    qty: 1,
-                    total: adminFee,
+                    total: new_total,
                 }
             }
-        );
-
-        let new_total = subTotals.value.reduce(function (prev, cur) {
-            return parseFloat(prev) + parseFloat(String(cur.value).replace(/,/g,''));
-        }, 0);
-        const new_total_str = new_total.toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2});
-
-        totals.value = {
-            label: "Total",
-            value: new_total_str,
-            raw: {
-                total: new_total,
-            }
+        } else {
+            removeArrByName(subTotals.value, 'rate');
+            removeArrByName(subTotals.value, 'servicefee');
+            subTotals.value.push(
+                {
+                    index: 0,
+                    name: 'rate',
+                    label: '₱'+ (rate_for_computation).toLocaleString() +'x'+ days+' Night'+ (days==1?'':'s'),
+                    value: subtotal_str,
+                    key: 1,
+                    raw: {
+                        rate: rate_for_computation,
+                        qty: days,
+                        total: subtotal,
+                    }
+                }
+            );
+            recomputeFees(subTotals.value);
         }
+        
 
         preBooking().catch(error => {
             error.message; 
@@ -430,10 +509,16 @@ const DateDiff = {
     }
 }
 
+const hasEarlyDiscount = ref(false);
+const isDiscountConditioMet = ref(false);
+const discountRate = ref(0);
+const discountAmount = ref(0);
+const discountMessage = ref('');
+const discountType = ref('%');
 
 const fetchData = async () => {
     try {
-        const response = await axios.get('/api/product/'+id.value+'/'+product.value,slug);
+        const response = await axios.get('/api/product/'+id.value+'/'+product.value.slug);
         if (!response) {
             const message = 'An error has occured: ${response.status}';
             throw new Error(message);
@@ -444,8 +529,33 @@ const fetchData = async () => {
         regroupAttribute(product.value.product_attributes);
         // form.value = await response.data.data;
         // parent.value = form.value.listing_category;
-        console.log("Product: ",  product.value);
+        console.log("SELECTED PRODUCT: ",  product.value);
         max_extra.value = product.value.max_guest - product.value.min_guest;
+        reviewsCollection.value = product.value.product_reviews;
+
+        hasEarlyDiscount.value= false;
+        discountRate.value = 0;
+        if (product.value.listing_category != null && product.value.listing_category.discount_rate.length> 0){
+            console.log("HAS LISTING DISCOUNT: ",  product.value.listing_category);
+            hasEarlyDiscount.value= true;
+            let discount_value = product.value.listing_category.discount_rate;
+            discountType.value= '%';
+            if (discount_value.indexOf('%')<0){
+                discountType.value= 'f';
+            } else {
+                discount_value = discount_value.replace('%','');
+            }
+
+            try {
+                discountRate.value = parseFloat(discount_value);
+            } catch (error) {
+                discountRate.value=0;
+            }
+
+            discountMessage.value = "Book "+ product.value.listing_category.discount_condition + " days before your check-in date to get " + ((discountType.value==='f')? "₱":"") + discount_value + ((discountType.value==='%')? "%":"") +" off." ;
+        }
+        console.log("Fetch Discount Rate Val:", discountRate.value);
+
         // console.log("Listing: ",  product.value.listing_category);
         // regroupAttribute(form.value.product_attributes);
     } catch (error) {
@@ -551,12 +661,13 @@ const submitForm = async () => {
 
     try {
         
-        console.log('Submit Product ID: ',  id.value);
-        console.log('Rate: ', product.value.rate, 'Selected Dates:', dateValue.value, "subtotals:", subTotals.value, "Totals:", totals.value, " jstring:", JSON.stringify(subTotals.value));
+        // console.log('Submit Product ID: ',  id.value);
+        // console.log('Rate: ', product.value.rate, 'Selected Dates:', dateValue.value, "subtotals:", subTotals.value, "Totals:", totals.value, " jstring:", JSON.stringify(subTotals.value));
 
         const fee = subTotals.value.find( ({ name }) => name === 'servicefee' );
-
-        // console.log("SERVICE FEE: ", fee);
+        let rate_discount_diff = 0;
+        if (discountAmount.value>0) rate_discount_diff = product.value.rate - discountAmount.value;
+        // console.log("SERVICE FEE: ", fee, "DISCOUNT RATE: ", discountAmount.value, " DIFF: ", rate_discount_diff);
         // return;
 
         // return;
@@ -577,8 +688,9 @@ const submitForm = async () => {
         formData.append('service_fee_rate', (fee!=undefined)? fee.raw.rate:0);
         formData.append('service_fee', (fee!=undefined)? fee.raw.total:0);
         formData.append('rate', product.value.rate);
+        formData.append('discount_rate', discountAmount.value);
         formData.append('subtotals', JSON.stringify(subTotals.value));
-        formData.append('discount', 0);
+        formData.append('discount', rate_discount_diff);
         formData.append('total', totals.value.raw.total);
 
         const response = await axios.post(action_url, formData);        
@@ -611,6 +723,16 @@ const submitForm = async () => {
     }
 }
 
+const moneyFormat = (v) =>{
+    try {
+        if (isNaN(v)) throw "Not a Number" 
+        const fv = parseFloat(v);
+        return fv.toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2});
+    } catch (error) {
+        return "0.00"
+    }
+}
+
 </script>
 
 <template>
@@ -629,14 +751,7 @@ const submitForm = async () => {
 
         <!-- Product Sub Title -->
         <div class="mb-4 items-center justify-center border-b-2 border-gray-400">
-            <div class="grid grid-cols-4 gap-1">
-                <div class="col-span-3">
-                    <p class="font-semibold text-lg py-2">{{ product.listing_category?.name }}</p>
-                </div>
-                <div class="item-end">
-                    <Ratings :rating="5"></Ratings>
-                </div>
-            </div>
+            <p class="font-semibold text-lg py-1">{{ product.listing_category?.name }}</p>
             
             <div class="pt-2 mb-4">
                 <span class="inline-block bg-gray-200 rounded-full px-3 py-1 text-md font-semibold text-gray-700 mr-2 mb-2">{{ product.listing_category?.category }}</span>
@@ -686,7 +801,17 @@ const submitForm = async () => {
             <div class="w-full md:w-1/2 mt-4 lg:pl-8">
                 <div class="rounded-lg border-solid border border-gray-300">
                     <div class="mb-4 p-8">
-                        <h1 class="font-bold text-md mb-4">₱{{ product.rate }} per Night</h1>
+                        <div class="p-4 mb-2 bg-red-400 text-gray-900 rounded-lg font-bold" v-if="hasEarlyDiscount">
+                            {{ discountMessage }}
+                        </div>
+                        <template v-if="isDiscountConditioMet">
+                            <h1 class="font-bold text-lg mb-1"><span class="text-red-600">₱{{ moneyFormat(discountAmount) }}</span> per Night</h1>
+                            <h1 class="font-normal text-sm mb-4 line-through">₱{{ moneyFormat(product.rate) }} per Night</h1>
+                        </template>
+                        <template v-else>
+                            <h1 class="font-bold text-md mb-4">₱{{ moneyFormat(product.rate) }} per Night</h1>
+                        </template>
+                        
                         <div class="mb-4">
                             <form method="POST" @submit.prevent="submitForm()">
                                 <div class="mb-4">
@@ -811,8 +936,8 @@ const submitForm = async () => {
             </div>
         </div>
 
-        <div class="flex">
-            <h1 class="font-semibold text-2xl my-2">Product Reviews</h1>
+        <div class="w-full border-t pt-2 mt-4">
+            <Reviews :collection="reviewsCollection" :title="'Reviews'" />
         </div>
     </div>
 </div>

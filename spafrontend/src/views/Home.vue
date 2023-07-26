@@ -119,7 +119,7 @@ const fetchData = async (get_url) => {
         // console.log('My Products', homeCollection.value);
         if (homeCollection.value && homeCollection.value.length>0){
             homeCollection.value.forEach( (item, index) => {
-                if (item.listings && item.listings.length>0) {
+                if (item.status === 1 && item.listings && item.listings.length>0) {
                     homeListings.value = homeListings.value.concat(item.listings);
                     // homeListings.value.push(item.listings);
                 }
@@ -129,9 +129,11 @@ const fetchData = async (get_url) => {
         console.log("HOME LISTINGS" , homeListings.value)
         if (homeListings.value.length>0){
             homeListings.value.forEach( (item, index) => {
-                if (item.products && item.products.length>0) {
+                if (item.enabled === 1 && item.products && item.products.length>0) {
                     item.products.forEach( (p, i) => {
-                        homeProducts.value.push(p);
+                        if (p.enabled===1){
+                            homeProducts.value.push(p);
+                        }
                     });
                     // homeProducts.value = homeProducts.value.concat(item.products);
                     // products.value.push(item.products);

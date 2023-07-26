@@ -14,8 +14,12 @@ class ProductReport extends Model
     protected $fillable = [
         'user_id',
         'books_id',
+        'product_id',
         'photos',
         'remarks',
+        'related_to',
+        'case_id',
+        'listing_category_id',
         'settled'
     ];
 

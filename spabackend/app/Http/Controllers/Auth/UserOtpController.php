@@ -99,7 +99,7 @@ class UserOtpController extends Controller
         $message = $expired ?'OTP has expired! Please request a new one.': null;
 
         if ($this->user->email_verified_at != null) {
-            $redirect = ($this->user->user_type == 'Partner')? '/partner/dashboard':'/';
+            $redirect = ($this->user->user_type == 'Partner')? '/partner/profile':'/';
             return response()->json([
                 'status' => true,
                 'otp_expired' => false,

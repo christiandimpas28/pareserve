@@ -1,5 +1,5 @@
 <script setup>
-import { watch, toRef  } from 'vue'
+import { watch, toRef, ref, computed  } from 'vue'
 const props = defineProps({
   form: { type: Object, default: {
         id: 0,
@@ -8,20 +8,116 @@ const props = defineProps({
         bus_contact_no: null,
         bus_email: null,
         bus_address: null,
+        documents: '',
+        terms_agreed_at: null,
     } 
   },
   formState: { type: Number, default: -1 },
-  errorMsg: { type: String, default: 'Oops! Something went wrong.' }
+  errorMsg: { type: String, default: 'Oops! Something went wrong.' },
+  agree: { type: Boolean, default: false },
 });
 
 toRef(() => props.formState);
 toRef(() => props.errorMsg);
+toRef(() => props.agree);
 // const formState.value = computed(() => props.formState);
 // toRefs 
-watch(() => {
-  console.log("Watch The initial formState", props.formState);
-  console.log("Watch The initial errorMsg", props.errorMsg);
+
+const formAgree = ref(false);
+const docsFile = ref([]);
+const docsUpload = ref([]);
+const filesUpload = ref([]);
+const uploadCounts = ref({ image: 0, file: 0 });
+
+watch(() => props.form, (c, b) => { 
+  if (c.documents !== null && c.documents.length>0) {
+    const arr_docs = c.documents.split(',');
+    if (arr_docs.length>0) {
+      docsFile.value.length = 0;
+      arr_docs.forEach( (item, index)=> {
+        let item_name = item.replace(/^\s+|\s+$/gm,'');
+        docsFile.value.push({
+            isImage: isFileImage(item_name),
+            name: item_name,
+            url: 'http://localhost:8000/uploads/merchants/' + item_name
+        })
+      });
+    }
+  }
 });
+
+watch(() => props.agree, (c, b) => { 
+  // console.log("WATCH agree: ", c);
+  formAgree.value = c;
+});
+
+// const agreed = computed(() => {
+//     //
+// });
+
+const onFileChange = (e) => {
+    const selected_files = e.target.files;
+    docsUpload.value.length= 0;
+    filesUpload.value.length=0;
+    // props.form.documents = '';
+    let deli = ',';
+    if (selected_files.length>0) {
+      uploadCounts.value.image = 0;
+      uploadCounts.value.file = 0;
+        for(let i=0; i<selected_files.length; i++) {
+            // if (props.form.documents.length===0) {
+            //   deli='';
+            // } else {
+            //   deli=',';
+            // }
+
+            // props.form.documents+=deli+selected_files[i].name;
+            let ft = isFileImage(selected_files[i].name);
+            if (ft === true) {
+              uploadCounts.value.image+=1;
+            } else {
+              uploadCounts.value.file+=1;
+            }
+            filesUpload.value.push(selected_files[i]);
+            docsUpload.value.push({
+                name: selected_files[i].name,
+                isIamge: ft,
+                url: URL.createObjectURL(selected_files[i])
+            });
+        }
+    }
+
+    console.log("Selected files", props.form, " docs:", docsUpload.value, " uploadCounts: ", uploadCounts.value);
+}
+
+const getFileExtension = (filename) => {
+    // get file extension
+    const extension = filename.substring(filename.lastIndexOf('.') + 1, filename.length);
+    return extension;
+}
+
+const isFileImage = (filename) => {
+    const imagesExt = Array('gif', 'jpg', 'jpeg', 'tif', 'png');
+    const fileExt = getFileExtension(filename);
+
+    const exist = imagesExt.find( (ext) => {
+        return ext.toLowerCase() === fileExt.toLowerCase();
+    });
+
+    if (exist == undefined) return false;
+    return true;
+}
+
+const agreeAction = () => {
+  console.log('agreeAction: ', formAgree.value);
+}
+
+const emit = defineEmits(['submitdata']);
+
+// const submit = (item) => {
+//     emit('submitdata', item );
+// }
+
 
 </script>
 
@@ -83,8 +179,22 @@ watch(() => {
     </div>
   </div>
 
-  <div class="mx-auto w-full max-w-[550px] bg-white" v-if="formState==2">
-    <form @submit.prevent="submit(form)" method="POST">
+  <div class="mx-auto w-full max-w-[650px] bg-white" v-if="formState==2">
+    <form @submit.prevent="$emit('submitdata', form, filesUpload)" method="POST" enctype="multipart/form-data">
+
+      <div class="mb-5" v-if="docsFile.length>0">
+        <div class="flex flex-wrap text-sm mb-4">
+          <span class="whitespace-nowrap py-1 px-4 mr-2 mt-2 rounded-full bg-gray-300" v-for="f in docsFile.filter((f)=> { return f.isImage===false; })" >{{ f.name }}</span>
+        </div>
+
+        <div class="grid grid-cols-4 gap-4" v-if="docsFile.length>0">
+          <div class="" v-for="i in  docsFile.filter( (i)=> { return i.isImage===true } )">
+            <img :src="i.url" class="object-cover h-48 w-96 rounded-lg" />
+          </div>
+        </div>
+
+      </div>
+
       <div class="mb-5">
         <label
           for="name"
@@ -173,8 +283,50 @@ watch(() => {
         </div>
       </div>
 
+
+      <div class="mb-5 pt-3">
+        <div class="mb-4">
+          <h1 class="mb-1 block text-base font-semibold text-[#07074D] sm:text-xl">Upload Documents*</h1>
+          <ul class="list-disc pl-5">
+            <li>2 Government-issued identification (Passport, Driver's License, Birth Certificate, etc.)</li>
+            <li>Business Permits and Mayor's permit</li>
+          </ul>
+        </div>
+
+        <div class="mb-5">
+          <div class="flex flex-wrap text-sm mb-4" v-if="uploadCounts.file>0">
+            <span class="whitespace-nowrap py-1 px-4 mr-2 mt-2 rounded-full bg-gray-300" v-for="f in docsUpload.filter((f)=> { return f.isIamge===false; })" >{{ f.name }}</span>
+          </div>
+
+          <div class="grid grid-cols-4 gap-4">
+            <div class="" v-for="i in  docsUpload.filter( (i)=> { return i.isIamge===true } )">
+              <img :src="i.url" class="object-cover h-48 w-96 rounded-lg" />
+            </div>
+          </div>
+        </div>
+
+        <div class="mb-4">
+            <input
+                class="relative m-0 block w-full min-w-0 flex-auto rounded border border-solid border-neutral-300 bg-clip-padding px-3 py-[0.32rem] text-base font-normal text-neutral-700 transition duration-300 ease-in-out file:-mx-3 file:-my-[0.32rem] file:overflow-hidden file:rounded-none file:border-0 file:border-solid file:border-inherit file:bg-neutral-100 file:px-3 file:py-[0.32rem] file:text-neutral-700 file:transition file:duration-150 file:ease-in-out file:[border-inline-end-width:1px] file:[margin-inline-end:0.75rem] hover:file:bg-neutral-200 focus:border-primary focus:text-neutral-700 focus:shadow-te-primary focus:outline-none dark:border-neutral-600 dark:text-neutral-200 dark:file:bg-neutral-700 dark:file:text-neutral-100 dark:focus:border-primary"
+                ref="inputFile"
+                type="file"
+                id="ref_photo"
+                accept="*" 
+                @change="onFileChange"
+                multiple
+            />
+        </div>
+      </div>
+
+      <div class="mb-6" v-if="form.terms_agreed_at === null">
+        <div class="flex items-center mb-5">
+          <input id="agree" type="checkbox" v-model="formAgree" class="w-4 h-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500 focus:ring-2 white:bg-gray-100 dark:border-gray-600">
+          <span><label for="agree" class="ml-2 text-sm font-medium text-gray-900 white:text-gray-900">Yes,</label> I agree to the terms & policies.</span>
+        </div>
+      </div>
+
       <div>
-        <button class="text-white mr-4 bg-cyan-700 hover:bg-cyan-800 focus:ring-4 focus:outline-none focus:ring-cyan-300 font-medium rounded-lg text-sm w-auto px-5 py-2.5 text-center dark:bg-cyan-600 dark:hover:bg-cyan-700 dark:focus:ring-cyan-800">
+        <button v-show="formAgree" class="text-white mr-4 bg-cyan-700 hover:bg-cyan-800 focus:ring-4 focus:outline-none focus:ring-cyan-300 font-medium rounded-lg text-sm w-auto px-5 py-2.5 text-center dark:bg-cyan-600 dark:hover:bg-cyan-700 dark:focus:ring-cyan-800">
           Save
         </button>
         <button @click.prevent="()=>{ formState = form.id!==undefined? 1: 0; }" class="text-slate-400 hover:text-sky-400 content-stretch">
@@ -216,22 +368,22 @@ watch(() => {
 </template>
 
 <script>
-  export default {
-    name: 'ProfileForm',
-    // mounted() {
-    //   console.log("mounted this.form" , this.form);
-    // },
-    methods: {
-      submit(fromData) {
-        // console.log("Emit Submit Sate ", this.formState);
-        this.$emit('save-data', fromData);
-      },
-      showToast(mode) {
-        // this.formState = state;
-        this.$emit('show-toast', mode);
-      }
-    },
-  };
+  // export default {
+  //   name: 'ProfileForm',
+  //   // mounted() {
+  //   //   console.log("mounted this.form" , this.form);
+  //   // },
+  //   methods: {
+  //     submit(fromData) {
+  //       // console.log("Emit Submit Sate ", this.formState);
+  //       this.$emit('save-data', fromData);
+  //     },
+  //     showToast(mode) {
+  //       // this.formState = state;
+  //       this.$emit('show-toast', mode);
+  //     }
+  //   },
+  // };
 
 // https://formbold.com/templates/appointment-form - Form Template
 // https://www.youtube.com/watch?v=Fb_uMTP4sk4 -Vue or https://tallpad.com/series/vuejs-misc 

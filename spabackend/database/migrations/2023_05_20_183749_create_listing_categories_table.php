@@ -24,6 +24,10 @@ return new class extends Migration
             // $table->foreignId('merchant_id')
             //     ->constrained(table: 'merchants', indexName: 'idx_merchant_id')
             //     ->onDelete('cascade');
+            $table->string('discount_title', 500)->nullable();
+            $table->string('discount_rate', 6)->nullable();
+            $table->smallInteger('discount_condition')->default(30);
+            $table->tinyInteger('enabled')->default(0);
             $table->timestamps();
 
             // $table->unique(['name']);

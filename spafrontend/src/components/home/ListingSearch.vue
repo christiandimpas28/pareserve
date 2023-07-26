@@ -79,7 +79,6 @@ onMounted(() => {
 const fetchData = async (get_url) => {
     try {
         isFetching.value=true;
-        console.log("get_url", get_url);
         const response = await axios.get(get_url);
         if (!response) {
             const message = 'An error has occured: ${response.status}';
@@ -89,6 +88,8 @@ const fetchData = async (get_url) => {
         collection.value = await response.data.data;
         if (collection.value !== null && collection.value.length>0){
             view_collection.value = collection.value;
+
+            console.log("view_collection", view_collection.value);
         
             price_end.value  = Math.max.apply(Math, view_collection.value.map(function (item) {
                 return item.rate;

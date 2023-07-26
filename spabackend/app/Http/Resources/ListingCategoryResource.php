@@ -23,7 +23,11 @@ class ListingCategoryResource extends JsonResource
             'city' => $this->city,
             'listing_photos' => $this->listing_photos,
             'merchant_id' => (string) $this->merchant_id,
-            'products' => ProductResource::collection($this->products)
+            'enabled' => $this->enabled,
+            'products' => ProductResource::collection($this->products),
+            'discount_title' => $this->discount_title,
+            'discount_rate' => $this->discount_rate,
+            'discount_condition' => $this->discount_condition,
         ];
         // return [
         //     'type' => 'listing',

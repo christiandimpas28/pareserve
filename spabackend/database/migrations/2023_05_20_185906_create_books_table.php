@@ -29,6 +29,7 @@ return new class extends Migration
             $table->decimal('service_fee_rate', $precision = 8, $scale = 2)->default(0);
             $table->decimal('service_fee', $precision = 8, $scale = 2)->default(0);
             $table->decimal('rate', $precision = 8, $scale = 2)->default(0);
+            $table->decimal('discount_rate', $precision = 8, $scale = 2)->default(0);
             $table->decimal('discount', $precision = 8, $scale = 2)->default(0);
             $table->decimal('total', $precision = 8, $scale = 2)->default(0);
             $table->enum('booking_status',[

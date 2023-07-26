@@ -19,6 +19,10 @@ class ListingCategory extends Model
         'city',
         'listing_photos',
         'merchant_id',
+        'discount_title',
+        'discount_rate',
+        'discount_condition',
+        'enabled',
     ];
 
     public function merchant()

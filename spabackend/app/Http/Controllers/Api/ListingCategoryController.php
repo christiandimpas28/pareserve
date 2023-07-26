@@ -86,6 +86,7 @@ class ListingCategoryController extends Controller
             'merchant_id' =>['required']
         ]);
 
+
         $files = [];
         // $request->listing_photos = null;
         if ($request->hasFile('files')){
@@ -105,6 +106,12 @@ class ListingCategoryController extends Controller
                 $request->merge(['listing_photos' => $str_files]);
             }            
         }
+
+        $merchant = Merchant::where('id', $request->merchant_id)->first();
+        if ($merchant !== null) {
+            $request['enabled']  = ($merchant->status>1)? 1: $merchant->status;
+        }
+        
         $listingCategory = ListingCategory::create($request->all());
         return new ListingCategoryResource($listingCategory);
     }
@@ -149,10 +156,16 @@ class ListingCategoryController extends Controller
                 }, $files));
     
                 $existing_photos = $request['listing_photos'];
-                $str_files .= ','.$existing_photos;
+                if ($existing_photos==null) $existing_photos='';
+                if (strlen($existing_photos)>0) $str_files .= ','.$existing_photos;
                 $request['listing_photos'] = $str_files;
                 $request->merge(['listing_photos' => $str_files]);
             }            
+        }
+
+        $merchant = Merchant::where('id', $request->merchant_id)->first();
+        if ($merchant !== null) {
+            $request['enabled']  = ($merchant->status>1)? 1: $merchant->status;
         }
 
         $listingCategory->update($request->all());

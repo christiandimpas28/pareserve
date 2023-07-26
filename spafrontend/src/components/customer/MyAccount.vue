@@ -28,7 +28,6 @@ const submit = async () => {
             throw new Error(response);
         }
 
-        console.log(response);
         toastMessage.value = response.data.message;
         showToast(1);
         authStore.handleLogout();

@@ -184,8 +184,9 @@ class MerchantController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(StoreMerchantRequest $request, Merchant $merchant)
+    public function update(StoreMerchantRequest $request)
     {
+        
         $request->validated();
         $user = $request->user()
                 ->makeHidden([
@@ -197,15 +198,70 @@ class MerchantController extends Controller
                     'id'
                 ]);
 
+        $isNew = false;
+        if ($request->id == null || ($request->id !== null && $request->id==0)){
+            $request->terms_agreed_at = now();
+            $request['terms_agreed_at'] = now();
+            $request->merge(['terms_agreed_at' => now()]);
+            $isNew = true;
+        }
+        $request['terms_agreed_at'] = now();
+
+        $files = [];
+        // $request->listing_photos = null;
+        if ($request->hasFile('files')){
+            foreach($request->file('files') as $key => $file)
+            {
+                $fileName = $request->id.'-'.time().rand(1,99).'.'.$file->extension();  
+                $file->move(public_path('uploads/merchants'), $fileName);
+                $files[]['name'] = $fileName;
+            }
+
+            if (sizeof($files)>0) {
+                $str_files = implode(',', array_map(function ($entry) {
+                    return ($entry[key($entry)]);
+                }, $files));
+
+                $deli = ',';
+                $existing_photos = $request['documents'];
+                if ($existing_photos==null) {
+                    $existing_photos = '';
+                    $deli = '';
+                }
+                $str_files .= $deli.$existing_photos;
+
+                $request['documents'] = $str_files;
+                $request->merge(['documents' => $str_files]);
+            }            
+        }
+
+        $table_cols = ['name', 'bus_contact_name', 'bus_contact_no', 'bus_email', 'bus_address', 'documents', 'terms_agreed_at'];
+        if (!$isNew) {
+            $table_cols = ['name', 'bus_contact_name', 'bus_contact_no', 'bus_email', 'bus_address', 'documents'];
+        }
         $user->Merchant()->updateOrCreate(
             ['user_id' => $user->id],
-            $request->only([
-                'name', 'bus_contact_name', 'bus_contact_no', 'bus_email', 'bus_address',
-            ])
+            $request->only($table_cols)
         );
 
         $user->load('merchant');
         return $user;
+    }
+
+    public function agree(Request $request, Merchant $merchant){
+        $user = $request->user();
+        if (strtoupper($user->user_type) !== 'PARTNER') {
+            return $this->error('', 'Forbidden. You dont have permission to access.', 403);
+        }
+
+        $now = now();
+        if ($merchant) {
+            $merchant->update(['terms_agreed_at'=>$now]);
+        } else {
+            return $this->error($record, 'No record found.', 404);
+        }
+
+        return $this->success($now, 'Success', 200);
     }
 
     /**

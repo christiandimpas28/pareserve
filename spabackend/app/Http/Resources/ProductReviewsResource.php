@@ -21,6 +21,7 @@ class ProductReviewsResource extends JsonResource
             'photos' => $this->photos,
             'rating' => $this->rating,
             'review' => $this->review,
+            'user' => $this->user,
         ];
     }
 }

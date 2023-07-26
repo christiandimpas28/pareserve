@@ -192,7 +192,6 @@ const regroupAttribute = (attrs) => {
                         <dt class="mb-2 text-lg font-bold"><span class="text-sm font-normal">Age below</span> {{ form?.free_below_age }}</dt>
                         <dd class="text-gray-500 dark:text-gray-700 text-sm font-semibold">Free Of Charge</dd>
                     </div>
-                    
                 </dl>
             </div>
 
