@@ -321,7 +321,14 @@ const reformatUploads = (photos) => {
                     </thead>
                     <tbody>
                         <tr class="border-b dark:border-neutral-500" v-for="item in collection">
-                            <td class="whitespace-nowrap px-6 py-4 truncate">{{ item.product_name }}</td>
+                            <td class="whitespace-nowrap px-6 py-4 truncate">
+                                <template v-if="item.booking_status == 'Pending'">
+                                    <router-link :to="{ name:'Booking', params: { id: item.books_id } }" target="_blank" class="underline hover:no-underline text-blue-600">{{ item.product_name }}</router-link>
+                                </template>
+                                <template v-else>
+                                    {{ item.product_name }}
+                                </template>
+                            </td>
                             <td class="whitespace-nowrap px-6 py-4">{{ item.from }}</td>
                             <td class="whitespace-nowrap px-6 py-4">{{ item.to }}</td>
                             <td class="whitespace-nowrap px-6 py-4">{{ item.days }}</td>
