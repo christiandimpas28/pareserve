@@ -44,6 +44,12 @@ import ViewProduct from '../components/merchant/ProductView.vue';
 import CreatetProduct from '../components/merchant/CreateProduct.vue';
 import ManageProduct from '../components/merchant/ManageProduct.vue';
 
+/* Admin */
+import Users from '../components/admin/Users.vue';
+import Merchants from '../components/admin/Merchants.vue';
+import Totals from '../components/admin/Totals.vue';
+import Cases from '../components/admin/Cases.vue';
+
 /* Payments */
 import PaymentSuccess from '../components/home/PaymentSuccess.vue';
 import PaymentFailed from '../components/home/PaymentFailed.vue';
@@ -142,7 +148,30 @@ const routes = [
         path: '/admin/dashboard', 
         name: 'Admin',
         component: Admin,
-        meta: { auth: true, utype: 'Admin' }
+        meta: { auth: true, utype: 'Admin', title: 'Dashboard' },
+        children: [
+            {
+                name: 'admin.users',
+                path: 'users',
+                component: Users,
+                meta: { auth: true, utype: 'Admin', title: 'Users' }
+            }, {
+                name: 'admin.merchants',
+                path: 'merchants',
+                component: Merchants,
+                meta: { auth: true, utype: 'Admin', title: 'Merchants' }
+            }, {
+                name: 'admin.totals',
+                path: 'totals',
+                component: Totals,
+                meta: { auth: true, utype: 'Admin', title: 'Totals' }
+            }, {
+                name: 'admin.cases',
+                path: 'cases',
+                component: Cases,
+                meta: { auth: true, utype: 'Admin', title: 'Cases' }
+            },
+        ],
     }, { 
         path: '/partner', 
         name: 'Partner',

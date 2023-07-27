@@ -98,11 +98,17 @@ const submitForm = async (data) => {
 
         const formData = new FormData();
         
-        for( var i = 0; i < data.inputFiles.length; i++ ){
-            let file = data.inputFiles[i];
-            formData.append('files[' + i + ']', file);
+        if (data.inputFiles !== null && data.inputFiles.length>0)
+        {    
+            for( var i = 0; i < data.inputFiles.length; i++ ){
+                let file = data.inputFiles[i];
+                formData.append('files[' + i + ']', file);
+            }
         }
-
+        console.log("Real Submit sata: ", data);
+        // return;
+        if (data.inputData.listing_photos==null) data.inputData.listing_photos='';
+        
         let action_url = '/api/partner/listings';
         formData.append('listing_photos', data.inputData.listing_photos);
         formData.append('name', data.inputData.name);
@@ -111,6 +117,10 @@ const submitForm = async (data) => {
         formData.append('address', data.inputData.address);
         formData.append('city', data.inputData.city);
         formData.append('merchant_id', merchant.value);
+
+        formData.append('discount_title', data.inputData.discount_title);
+        formData.append('discount_rate', data.inputData.discount_rate);
+        formData.append('discount_condition', data.inputData.discount_condition);
         
         if (action.value==='PUT') {
             formData.append('_method', 'put');
@@ -268,9 +278,9 @@ router.beforeResolve((to, from) => {
                     ref="propertyFromChild"
                     :form="form"
                     :action="action" 
-                    @save-data="submitForm"
-                    @delete-data="deleteForm"
-                    @close-form="closeForm" 
+                    @savedata="submitForm"
+                    @deletedata="deleteForm"
+                    @closeform="closeForm" 
                 />
             </div>
 

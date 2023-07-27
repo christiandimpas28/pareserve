@@ -27,6 +27,8 @@ class StoreMerchantRequest extends FormRequest
             'bus_contact_no' => [$this->isPostRequest()],
             'bus_email' => [$this->isPostRequest(), 'string', 'email', 'max:500'],
             'bus_address' => [$this->isPostRequest(), 'string', 'max:1000'],
+            // 'documents' => [$this->isPostRequest(), 'string', 'max:1000'],
+            // 'terms_agreed_at' => [$this->isPostRequest()],
         ];
     }
 

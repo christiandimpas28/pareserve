@@ -22,6 +22,10 @@ class MerchantsResource extends JsonResource
             'bus_contact_no' => $this->bus_contact_no,
             'bus_email' => $this->bus_email,
             'bus_address' => $this->bus_address,
+            'documents' => $this->documents,
+            'status' => $this->status,
+            'status_remarks' => $this->status_remarks,
+            'terms_agreed_at' => $this->terms_agreed_at,
             'listings' => ListingCategoryResource::collection($this->listings)
         ];
     }

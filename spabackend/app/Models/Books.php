@@ -25,6 +25,7 @@ class Books extends Model
         'service_fee_rate',
         'service_fee',
         'rate',
+        'discount_rate',
         'discount',
         'total',
         'booking_status',

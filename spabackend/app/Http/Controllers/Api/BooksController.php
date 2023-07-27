@@ -158,6 +158,7 @@ class BooksController extends Controller
         $transactions = DB::table('books')
             ->leftJoin('booked_summaries', 'books.booked_id', '=', 'booked_summaries.id')
             ->leftJoin('product_review', 'books.id', '=', 'product_review.book_id')
+            ->leftJoin('product_report', 'books.id', '=', 'product_report.books_id')
             ->where('books.user_id', '=', $user->id)
             ->orderBy('books.created_at', 'desc')
             ->get([
@@ -170,6 +171,12 @@ class BooksController extends Controller
                 'product_review.photos AS product_review_photos',
                 'product_review.rating AS product_review_rating',
                 'product_review.review AS product_review_review',
+                'product_report.id AS product_report_id',
+                'product_report.related_to AS product_report_related_to',
+                'product_report.remarks AS product_report_remarks',
+                'product_report.photos AS product_report_photos',
+                'product_report.settled AS product_report_settled',
+                'product_report.case_id AS product_report_case_id',
             ]);
 
         // $transactions = Books::select('books.*, booked_summaries.*')

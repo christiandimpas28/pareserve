@@ -13,15 +13,16 @@ const authStore = useAuthStore();
 
 const showMain = ref(true);
 const componentTitle = ref('');
-
 const primary = ref({});
 const bookingCountItems = ref([]);
 const product_ids = ref([]);
 const transactionCollection = ref([]);
 const totals = ref({});
+const headerAlert = ref(false);
 
 onMounted(() => {
     initFlowbite();
+    headerAlert.value = false;
     showMain.value= router.currentRoute.value.name==='Partner';
     componentTitle.value = router.currentRoute.value.meta.title;
     
@@ -84,9 +85,15 @@ const fetchData = async () => {
         primary.value = await response.data.data;
         getProducts();
         fetchTransactionData();
+        if (primary.value === null) {
+            headerAlert.value = true;
+        } else if (primary.value!== null && primary.value.status !==1) {
+            headerAlert.value = true;
+        }
         console.log("Primary: ",  primary.value);
         console.log("Listing: ",  primary.value.listings);
         console.log("Product Ids: ",  product_ids.value);
+
     } catch (error) {
         console.log("fetchData" ,error.response);
         if (error.response.statusText === "Unauthorized"){
@@ -158,12 +165,10 @@ const getProducts = () => {
     }
 }
 
-
 router.beforeEach((to, from) => { 
     showMain.value= to.name==='Partner';
     componentTitle.value = to.meta.title;
 });
-
 </script>
 
 <template>
@@ -204,6 +209,15 @@ router.beforeEach((to, from) => {
             </div>
             <div class="mx-auto max-w-screen-4xl p-4 md:p-6 2xl:p-10">
                 <div v-show="showMain">
+                    <div class="border-l-4 border-blue-600 bg-gray-200 p-5" v-show="headerAlert">
+                        <div v-if="primary === null">
+                            <p class="mb-4">To activate your account, kindly submit your business documents through the button below:</p>
+                            <RouterLink :to="{name: 'BusinessProfile'}" class="text-white mr-4 bg-cyan-700 hover:bg-cyan-800 focus:ring-4 focus:outline-none focus:ring-cyan-300 font-medium rounded-lg text-sm w-auto px-5 py-2.5 text-center dark:bg-cyan-600 dark:hover:bg-cyan-700 dark:focus:ring-cyan-800">Create Profile</RouterLink>
+                        </div>
+                        <div v-else>
+                            <p>{{ primary.status_remarks }}</p>
+                        </div>
+                    </div>
                     <div class="grid gap-3 xl:grid-cols-3 xs:grid-cols-1 sm:grid-cols-1">
                         <!-- card -->
                         <div class="card mt-6 bg-[#56BDF0] rounded p-2">

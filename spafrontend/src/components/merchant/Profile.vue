@@ -12,6 +12,9 @@ const formState = ref(0);
 const errorMsg = ref('');
 const parentView = ref('PROFILE');
 const listing_count = ref(0);
+const showModal = ref(false);
+const modalTitle = ref('Policies & Requirements');
+const agree = ref(false);
 
 onMounted(() => {
     authStore.getToken();
@@ -37,21 +40,62 @@ const fetchData = async () => {
         console.log("Merchant: ",  form.value);
         console.log("Listing Count: ",  form.value.listings.length);
         formState.value = 1;
+        agree.value = true;
+        if (form.value===null) {
+            showModal.value = !showModal.value;
+            agree.value =false;
+            return;
+        }
+        if (form.value !== null && form.value.terms_agreed_at === null) {
+            showModal.value = !showModal.value;
+            agree.value = false;
+        } 
     } catch (error) {
         console.log("fetchData" ,error);
     }
-    
 }
 
-const submitForm = async (form_data) => {
+const submitForm = async (form_data, docs) => {
+    console.log("submitForm", form_data, " docs", docs);
     try {
-        const response = await axios.post('/api/partner/profile', form_data);
-        console.log("Data", response, "Old formState.value", formState);
+        const config = {
+            headers: {
+                'Content-Type': 'multipart/form-data',
+            }
+        };
+
+        let d = (form_data.documents === null)? '': form_data.documents;
+        const formData = new FormData();
+
+        if (form_data.id == null || (form_data.id !== null && form_data.id ==-0)) {
+            d='';
+        }
+        
+        if (docs.length>0) {
+            for( var i = 0; i < docs.length; i++ ){
+                let file = docs[i];
+                formData.append('files[' + i + ']', file);
+            }
+        }
+        
+        formData.append('id', form_data.id);
+        formData.append('name', form_data.name);
+        formData.append('bus_address', form_data.bus_address);
+        formData.append('bus_contact_name', form_data.bus_contact_name);
+        formData.append('bus_contact_no', form_data.bus_contact_no);
+        formData.append('bus_email', form_data.bus_email);
+        formData.append('documents', d);
+        formData.append('terms_agreed_at', true);
+
+        const response = await axios.post('/api/partner/profile', formData, config);
+        
         if (!response) {
             const message = 'An error has occured: ${response.status}';
             throw new Error(message);
         }
         showToast(1);
+        form.value = response.data.merchant;
+        console.log("New Value", form.value);
     } catch (error) {
         errorMsg.value=error.message;
         showToast(2);
@@ -70,10 +114,15 @@ const showToast = (mode) => {
     }, 5000);
 }
 
+const toggleModal = ()=>{
+    if (agree.value === false) return;
+    showModal.value = !showModal.value;
+}
+
 </script>
 
 <template>
-    <div class="mx-auto max-w-2xl">
+    <div class="mx-auto max-w-3xl">
         <div class="mb-6 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
             <h2 class="text-title-md2 font-bold text-black white:text-dark">
                 Profile
@@ -94,8 +143,8 @@ const showToast = (mode) => {
             :form="form"
             :form-state="formState"
             :error-msg="errorMsg"
-            @save-data="submitForm"
-            @show-toast="showToast"
+            :agree="agree"
+            @submitdata="submitForm"
         />
         <div class="mt-10">
             <!-- <h2 class="text-title-md2 font-bold text-black white:text-dark mb-4">
@@ -118,6 +167,55 @@ const showToast = (mode) => {
                 </div>
             </div>
         </div>
+
+        <div v-if="showModal" class="overflow-x-hidden overflow-y-auto fixed inset-0 z-50 outline-none focus:outline-none justify-center items-center flex">
+            <div class="relative w-auto my-6 mx-auto max-w-6xl">
+                <!--content-->
+                <div class="border-0 rounded-lg shadow-lg relative flex flex-col w-full bg-white outline-none focus:outline-none">
+                <!--header-->
+                <div class="flex items-start justify-between p-5 border-b border-solid border-slate-200 rounded-t">
+                    <h3 class="text-3xl font-semibold">
+                    {{ modalTitle }}
+                    </h3>
+                    <button class="" v-on:click="toggleModal()">
+                    <span class="font-semibold">
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-8 h-8">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
+                        </svg>
+                    </span>
+                    </button>
+                </div>
+                <!--body-->
+                <div class="relative p-6 flex-auto">
+                    Modal
+
+                </div>
+                <!--footer-->
+                <div class="grid grid-cols-2 items-center p-6 border-t border-solid border-slate-200 rounded-b">
+                    <div class="flex justify-start">
+                        <input id="agree" type="checkbox" value="" v-model="agree" class="w-4 h-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500 focus:ring-2 white:bg-gray-100 dark:border-gray-600">
+                        <label for="agree" class="ml-2 text-sm font-medium text-gray-900 white:text-gray-900">Yes, I agree to the terms & policies.</label> 
+                    </div>
+                    <div class="flex justify-end ">
+                        <button class="text-gray-100 bg-teal-400 px-6 rounded-lg font-bold uppercase py-4 text-sm outline-none focus:outline-none mb-1 ease-linear transition-all duration-150" type="button" v-on:click="toggleModal()">
+                        Ok
+                        </button> 
+                    </div>
+                    <!-- 
+                    <button class="text-teal-500 bg-transparent border border-solid border-teal-500 hover:bg-teal-500 hover:text-white active:bg-teal-600 font-bold uppercase text-sm px-4 py-2 rounded outline-none focus:outline-none mr-1 mb-1 ease-linear transition-all duration-150" type="button" v-on:click="toggleModal()">
+                    Close
+                    </button>
+                    <button class="text-cyan-500 background-transparent font-bold uppercase px-6 py-2 text-sm outline-none focus:outline-none mr-1 mb-1 ease-linear transition-all duration-150" type="button" v-on:click="toggleModal()">
+                    Save Changes
+                    </button> 
+                    -->
+                </div>
+                </div>
+            </div>
+        </div>
+        <div v-if="showModal" class="opacity-25 fixed inset-0 z-40 bg-black"></div>
+
+
     </div>
 
 

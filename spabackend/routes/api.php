@@ -3,6 +3,7 @@
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Api\AuthController;
+use App\Http\Controllers\Api\AdminController;
 use App\Http\Controllers\Api\BooksController;
 use App\Http\Controllers\Api\SearchController;
 use App\Http\Controllers\Api\PaymentController;
@@ -11,6 +12,8 @@ use App\Http\Controllers\Api\CategoryController;
 use App\Http\Controllers\Api\MerchantController;
 use App\Http\Controllers\Api\DeveloperController;
 use App\Http\Controllers\Api\IntegrationController;
+use App\Http\Controllers\Api\ProductReportController;
+use App\Http\Controllers\Api\ProductReviewsController;
 use App\Http\Controllers\Api\CustomerProfileController;
 use App\Http\Controllers\Api\ListingCategoryController;
 use App\Http\Controllers\Api\ProductAttributesController;
@@ -61,6 +64,7 @@ Route::group(['middleware' => ['auth:sanctum', 'verifyaccess']], function () {
     Route::get('/merchants', [MerchantController::class, 'index']);
     Route::get('/partner/profile', [MerchantController::class, 'show']);
     Route::post('/partner/profile', [MerchantController::class, 'update']);
+    Route::post('/partner/setup/terms/{merchant}', [MerchantController::class, 'agree']);
     Route::delete('/partner/profile/{merchant}', [MerchantController::class, 'destroy']);
 
     Route::get('/partner/listings', [ListingCategoryController::class, 'index']);
@@ -81,7 +85,9 @@ Route::group(['middleware' => ['auth:sanctum', 'verifyaccess']], function () {
     Route::post('/partner/product/attr', [ProductAttributesController::class, 'store']);
     Route::delete('/partner/product/attr/{productAttributes}', [ProductAttributesController::class, 'destroy']);
     Route::get('/partner/product/attr/{productAttributes}', [ProductAttributesController::class, 'show']);
-    
+
+    Route::post('/customer/product/review/{books}/{product}', [ProductReviewsController::class, 'store']);
+    Route::post('/customer/book/report/{books}', [ProductReportController::class, 'store']);
     
     //Customer
     Route::get('/customer/profile', [CustomerProfileController::class, 'show']);
@@ -109,6 +115,19 @@ Route::group(['middleware' => ['auth:sanctum', 'verifyaccess']], function () {
     Route::get('/v2/partner/profile', [MerchantController::class, 'showV2']);
     Route::get('/v2/partner/listings', [MerchantController::class, 'indexV2']);
     Route::get('/v2/partner/bookings', [BooksController::class, 'merchantTransactionsV2']);
+
+    //Admin
+    Route::get('/admin/guest/users/profile', [AdminController::class, 'guestUsers']);
+    Route::get('/admin/partner/users/profile', [AdminController::class, 'partnerUsers']);
+    Route::get('/admin/merchants', [AdminController::class, 'merchants']);
+    Route::get('/admin/transaction/totals', [AdminController::class, 'totals']);
+    Route::get('/admin/alarming/cases', [AdminController::class, 'alarmingCases']);
+
+    Route::post('/admin/merchant/update/status/{merchant}', [AdminController::class, 'updateMerchantStatus']);
+
+    Route::post('/admin/report/update/status/{productReport}/{product}', [AdminController::class, 'toggleSuspension']);
+
+    
 
 });
 

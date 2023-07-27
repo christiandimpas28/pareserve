@@ -1,5 +1,5 @@
 <script setup>
-import { ref, onMounted } from 'vue'
+import { ref } from 'vue'
 
 const props = defineProps({
   form: { 
@@ -15,7 +15,8 @@ const props = defineProps({
   },
   files: { type: Array, default: () => []},
   action: { type: String, default: 'POST' },
-  header: { type: Object, default: { title: 'Write Review', subTitle: '' } }
+  header: { type: Object, default: { title: 'Write Review', subTitle: '' } },
+  errors: { type: Array,default: ()=> [ { rating: [] }, { review: [] } ] }
 });
 
 const defaultColors = ['fill-gray-300','fill-gray-500'];
@@ -27,11 +28,50 @@ const colorValues= ref([
 
 const photoUpload = ref([]);
 
-const emit = defineEmits(['submit']);
+
+const emit = defineEmits(['submitreview']);
+// const emit = defineEmits(['eventA', 'eventB'])
 
 const submit = () => {
     console.log('SUBMIT', props.form );
-    // emit('ratenow', { inputData: props.form, inputFiles: props.files});
+    // emit('submitreview', props.form);
+    // errors.value =[];
+
+    // const config = {
+    //     headers: {
+    //         'Content-Type': 'multipart/form-data',
+    //     }
+    // };
+
+    // // emit('ratenow', { inputData: props.form, inputFiles: props.files});
+    // let action_url = '/api/partner/product/review/' + props.form.book_id + '/' + props.form.product_id;
+    // const formData = new FormData();
+
+    // if (props.form.photos !== null) {
+    //     for( var i = 0; i < props.form.photos.length; i++ ){
+    //         let file = props.form.photos[i];
+    //         formData.append('files[' + i + ']', file);
+    //     }
+    // }
+    
+    // console.log("Rating: ", props.form.rating!=0);
+    // if (props.form.rating!==0) formData.append('rating', props.form.rating);
+    // formData.append('review', props.form.review);
+    // formData.append('book_id', props.form.book_id);
+    // formData.append('product_id', props.form.product_id);
+
+    // try {
+    //     const response = await axios.post(action_url, formData, config);
+    //     console.log("Review - Response: ", response.data.data);
+    //     if (!response) {
+    //         const message = 'An error has occured: ${response.status}';
+    //         throw new Error(message);
+    //     }
+    // } catch (error) {
+    //     errors.value = error.response.data.errors;
+    //     console.log("Errors: ", errors.value);
+    // }
+    
 }
 
 const rate = (val) => {
@@ -76,6 +116,7 @@ const resetUpload = () => {
 }
 
 </script>
+
 <template>
     <!-- <div class="md-4">
         <h2 class="text-title-md2 font-bold text-black white:text-dark">
@@ -84,7 +125,7 @@ const resetUpload = () => {
         <p>{{ header.subTitle }}</p>
     </div> -->
     <div class="md-4 mx-auto w-full max-w-[820px] min-w-[600px] bg-white">
-        <form @submit.prevent="submit()" method="POST" enctype="multipart/form-data">
+        <form @submit.prevent="$emit('submitreview', props.form)" method="POST" enctype="multipart/form-data">
             <input type="hidden" v-model="form.user_id" id="user_id" name="user_id" />
             <input type="hidden" v-model="form.book_id" id="book_id" name="book_id" />
             <input type="hidden" v-model="form.product_id" id="product_id" name="product_id" />
@@ -147,10 +188,16 @@ const resetUpload = () => {
                         <span class="bg-gray-300 px-1 py-1 rounded-full text-sm ml-2">{{ form.rating }}/5</span>
                     </li>
                 </ul>
+                <div v-if="errors.rating">
+                    <span class="text-red-400 text-sm m-2 p-2 bg-red-50 rounded-md">{{ errors.rating[0] }}</span>
+                </div> 
             </div>
             <div class="mb-4 pt-3">
                 <label for="review" class="mb-3 block text-base font-medium text-gray-800" >Review</label>
-                <textarea id="review" maxlength="2000" v-model="form.review" required rows="6" class="w-[400px] block p-2.5 w-full text-sm text-gray-900 rounded-lg border border-gray-300 focus:ring-blue-500 focus:border-blue-500 dark:border-gray-600 dark:placeholder-gray-400 white:text-dark dark:focus:ring-blue-500 dark:focus:border-blue-500" placeholder="Write your thoughts here..."></textarea>
+                <div v-if="errors.review">
+                    <span class="text-red-400 text-sm m-2 p-2 bg-red-50 rounded-md">{{ errors.review[0] }}</span>
+                </div> 
+                <textarea id="review" maxlength="5000" v-model="form.review"  rows="6" class="w-[400px] block p-2.5 w-full text-sm text-gray-900 rounded-lg border border-gray-300 focus:ring-blue-500 focus:border-blue-500 dark:border-gray-600 dark:placeholder-gray-400 white:text-dark dark:focus:ring-blue-500 dark:focus:border-blue-500" placeholder="Write your thoughts here..."></textarea>
             </div>
             <div class="mb-4">
                 <div class="grid grid-cols-4 gap-2">
@@ -167,7 +214,7 @@ const resetUpload = () => {
                 <label
                     for="id_photo"
                     class="mb-3 block text-base font-medium text-[#07074D]"
-                    >Photos (5 Max)</label
+                    >Photos (5 Max) - Optional</label
                 >
                 <input
                     class="relative m-0 block w-full min-w-0 flex-auto rounded border border-solid border-neutral-300 bg-clip-padding px-3 py-[0.32rem] text-base font-normal text-neutral-700 transition duration-300 ease-in-out file:-mx-3 file:-my-[0.32rem] file:overflow-hidden file:rounded-none file:border-0 file:border-solid file:border-inherit file:bg-neutral-100 file:px-3 file:py-[0.32rem] file:text-neutral-700 file:transition file:duration-150 file:ease-in-out file:[border-inline-end-width:1px] file:[margin-inline-end:0.75rem] hover:file:bg-neutral-200 focus:border-primary focus:text-neutral-700 focus:shadow-te-primary focus:outline-none dark:border-neutral-600 dark:text-neutral-200 dark:file:bg-neutral-700 dark:file:text-neutral-100 dark:focus:border-primary"
@@ -179,7 +226,7 @@ const resetUpload = () => {
                     multiple
                 />
             </div>
-            <div class="mb4">
+            <div class="flex mb4 justify-end">
                 <button class="text-white mr-4 bg-cyan-700 hover:bg-cyan-800 focus:ring-4 focus:outline-none focus:ring-cyan-300 font-medium rounded-lg text-sm w-auto px-5 py-2.5 text-center dark:bg-cyan-600 dark:hover:bg-cyan-700 dark:focus:ring-cyan-800">
                     Save
                 </button>

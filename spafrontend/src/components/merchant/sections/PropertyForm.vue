@@ -21,6 +21,9 @@ const props = defineProps({
         listing_photos: null,
         merchant_id: null,
         products: [],
+        discount_title: null,
+        discount_rate: null,
+        discount_condition: 30
     } 
   },
   files: { type: Array, default: () => []},
@@ -30,46 +33,48 @@ const props = defineProps({
 
 toRef(() => props.action);
 toRef(() => props.form);
-const emit = defineEmits(['submit']);
+
+const emit = defineEmits(['savedata', 'deletedata', 'closeform']);
 
 // const selected = ref(props.selected)
 
 watch(() => props.form, (c, b) => { 
-   if(props.form.id != 0 && props.form.listing_photos !== undefined && props.form.listing_photos != null && props.form.listing_photos.length>0){
-    const arr_listing_photos = props.form.listing_photos.split(',');
-    imagePreviewCollection.value=[];
-    // console.log("listing_photos", props.form.listing_photos, "Is ARRAY", Array.isArray(arr_listing_photos));
-    arr_listing_photos.forEach( (item, index)=> {
-        let img_name = item.replace(/^\s+|\s+$/gm,'');
-        // console.log(index, "Item:", img_name);
-        imagePreviewCollection.value.push({
-            id: index,
-            listing_id: props.form.id,
-            merchant_id: props.form.merchant_id,
-            name: img_name,
-            url: 'http://localhost:8000/uploads/' + img_name
-        });
-    });    
-   }
+    console.log("watch FORM: ", c, " Is photos Null? ", c.listing_photos==null);
+    if(props.form.id != 0 && props.form.listing_photos !== undefined && props.form.listing_photos != null && props.form.listing_photos.length>0){
+        const arr_listing_photos = props.form.listing_photos.split(',');
+        imagePreviewCollection.value=[];
+        console.log("watch FORM LISTING PHOTOS: ", c.listing_photos);
+        // console.log("listing_photos", props.form.listing_photos, "Is ARRAY", Array.isArray(arr_listing_photos));
+        arr_listing_photos.forEach( (item, index)=> {
+            let img_name = item.replace(/^\s+|\s+$/gm,'');
+            // console.log(index, "Item:", img_name);
+            imagePreviewCollection.value.push({
+                id: index,
+                listing_id: props.form.id,
+                merchant_id: props.form.merchant_id,
+                name: img_name,
+                url: 'http://localhost:8000/uploads/' + img_name
+            });
+        });    
+    }
 });
 
-
 const submit = () => {
-    // console.log("Emit Submit", props.form, props.files);
+    console.log("Emit Submit", props.form, " FILES:", props.files);
     imageUploadCollection.value =[];
     document.getElementById("photos").value=null;
-    emit('save-data', { inputData: props.form, inputFiles: props.files});
+    emit('savedata', { inputData: props.form, inputFiles: props.files});
     // this.$emit('save-data', fromData);
 }
 
 const deleteListing = () => {
-    console.log("Delete Triggered");
-    console.log("Merchant:", props.form.merchant_id , "Listing:", props.form.id);
-    emit('delete-data', { inputData: props.form });
+    // console.log("Delete Triggered");
+    // console.log("Merchant:", props.form.merchant_id , "Listing:", props.form.id);
+    emit('deletedata', { inputData: props.form });
 }
 
 const deleteImage = async (item) => {
-    console.log("Parent deleteImage", item);
+    // console.log("Parent deleteImage", item);
     try {
         const response = await axios.delete('/api/partner/listings/delete/photo/'+item.listing_id, { data: item });        
         if (!response) {
@@ -83,8 +88,9 @@ const deleteImage = async (item) => {
             if (image['name'] === item.name) return false;
             return true;
         });
-        imagePreviewCollection.value = new_items
-        console.log("new_items", imagePreviewCollection.value);
+        imagePreviewCollection.value = new_items;
+        props.form.listing_photos = rd.listing_photos;
+        // console.log("new_items", imagePreviewCollection.value, " props.form.listing_photos: ", props.form.listing_photos);
     } catch (error) {
         console.log("deleteImage Error", error);
     }
@@ -96,7 +102,7 @@ const close = () => {
     imagePreviewCollection.value=[];
     props.files.length = 0;    
     document.getElementById("photos").value=null;
-    emit('close-form');
+    emit('closeform');
 }
 
 const onFileChange = (e) => {
@@ -104,6 +110,7 @@ const onFileChange = (e) => {
     // console.log("onFileChange Form", props.form);
     // console.log(files.length, isArray(files), files);
     imageUploadCollection.value = [];
+    props.files =[];
     props.files.length = 0;
     for(let i=0; i<files.length; i++) {
         
@@ -132,8 +139,8 @@ defineExpose({
 </script>
 
 <template>
-<div class="mx-auto max-w-lg justify-center">
-    <div class="mx-auto w-full max-w-lg">
+<div class="mx-auto max-w-2xl justify-center">
+    <div class="mx-auto w-full">
         <h2 class="text-title-lg font-bold text-black white:text-dark">
             Yosh! List your property today.
         </h2>
@@ -141,7 +148,7 @@ defineExpose({
             Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s...
         </p>
     </div>
-    <div class="mx-auto w-full max-w-lg bg-white">
+    <div class="mx-auto w-full bg-white">
         <div class="mb-4">
             <ImageGallery :collection="imagePreviewCollection" :mode="1" :title="galleryTitle" @delete-image="deleteImage"/>
         </div>
@@ -177,6 +184,28 @@ defineExpose({
                 <input type="text" v-model="form.city" name="city" id="city" required
                 placeholder="City" class="w-full rounded-md border border-[#e0e0e0] bg-white py-3 px-3 text-base font-medium text-[#6B7280] outline-none focus:border-[#6A64F1] focus:shadow-md" 
                 />
+            </div>
+            <div class="border border-gray-300 p-4 rounded-lg mb-8">
+                <p class="mt-6 mb-4 text-lg font-medium">Listing Promotions/Discounts</p>
+                <div class="grid grid-cols-2 gap-4 p-4">
+                    <div class="col-span-2">
+                        <label for="early_discount_title" class="mb-3 block text-base font-medium text-[#07074D]">Title</label>
+                        <input type="text" v-model="form.discount_title" name="rate" id="discount_title"
+                        placeholder="Discount Title" class="w-full rounded-md border border-[#e0e0e0] bg-white py-3 px-3 text-base font-medium text-[#6B7280] outline-none focus:border-[#6A64F1] focus:shadow-md" />
+                    </div>
+                    <div>
+                        <label for="early_discount" class="mb-3 block text-base font-medium text-[#07074D]">Early Discount</label>
+                        <input type="text" v-model="form.discount_rate" name="rate" id="discount_rate" maxlength="10"
+                        placeholder="Rate (Add '%' as suffix if percentage)" class="w-full rounded-md border border-[#e0e0e0] bg-white py-3 px-3 text-base font-medium text-[#6B7280] outline-none focus:border-[#6A64F1] focus:shadow-md" 
+                        />
+                    </div>
+                    <div>
+                        <label for="early_discount" class="mb-3 block text-base font-medium text-[#07074D]">Number of Days Ahead</label>
+                        <input type="number" min="5" v-model="form.discount_condition" name="discount_condition" id="early_days_ahead" maxlength="3"
+                        placeholder="Days" class="w-full rounded-md border border-[#e0e0e0] bg-white py-3 px-3 text-base font-medium text-[#6B7280] outline-none focus:border-[#6A64F1] focus:shadow-md" 
+                        />
+                    </div>
+                </div>
             </div>
             <div class="mb-4">
                 <ImageGallery :collection="imageUploadCollection" :mode="0" :title="imageUploadTitle"  />

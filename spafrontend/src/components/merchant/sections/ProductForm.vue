@@ -144,7 +144,6 @@ const deleteProduct = () => {
 }
 
 const close = () => {
-    console.log("Close Click - Triggered");
     imagePreviewCollection.value = [];
     imageUploadCollection.value =[];
     props.files.length = 0;    

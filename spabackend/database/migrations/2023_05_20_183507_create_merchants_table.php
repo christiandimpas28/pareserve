@@ -19,7 +19,11 @@ return new class extends Migration
             $table->string('bus_contact_name')->required();
             $table->string('bus_contact_no', 15)->nullable();
             $table->string('bus_email', 500)->required();
-            $table->string('bus_address', 1000);   
+            $table->string('bus_address', 1000);
+            $table->string('documents', 1000)->nullable();
+            $table->tinyInteger('status')->default(0);
+            $table->text('status_remarks', 2000)->nullable();
+            $table->timestamp('terms_agreed_at')->nullable();
             // $table->foreignId('user_id')
             //     ->constrained(table: 'users', indexName: 'idx_user_id')
             //     ->onDelete('cascade');

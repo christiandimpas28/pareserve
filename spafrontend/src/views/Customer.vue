@@ -4,7 +4,7 @@ import { useAuthStore } from '../stores/auth';
 import { useRouter } from 'vue-router';
 import { initFlowbite } from 'flowbite';
 import axios from "axios";
-import SideBar from '../components/customer/sections/sidebar.vue'
+import SideBar from '../components/customer/sections/sidebar.vue';
 import TransactionCount from '../components/customer/sections/TransactionCount.vue';
 import TransactionItems from '../components/customer/sections/TransactionItems.vue';
 
