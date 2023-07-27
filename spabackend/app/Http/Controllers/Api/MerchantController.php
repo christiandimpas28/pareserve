@@ -186,7 +186,6 @@ class MerchantController extends Controller
      */
     public function update(StoreMerchantRequest $request)
     {
-        
         $request->validated();
         $user = $request->user()
                 ->makeHidden([
@@ -199,13 +198,10 @@ class MerchantController extends Controller
                 ]);
 
         $isNew = false;
-        if ($request->id == null || ($request->id !== null && $request->id==0)){
-            $request->terms_agreed_at = now();
+        if ($request->id == 'undefined'){
             $request['terms_agreed_at'] = now();
-            $request->merge(['terms_agreed_at' => now()]);
             $isNew = true;
-        }
-        $request['terms_agreed_at'] = now();
+        }        
 
         $files = [];
         // $request->listing_photos = null;

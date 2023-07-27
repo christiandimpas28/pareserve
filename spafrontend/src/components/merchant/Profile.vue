@@ -51,7 +51,12 @@ const fetchData = async () => {
             agree.value = false;
         } 
     } catch (error) {
-        console.log("fetchData" ,error);
+        console.log("fetchData x" ,error.response);
+        if (error.response.status == 404) {
+            showModal.value = !showModal.value;
+            agree.value =false;
+            return;
+        }
     }
 }
 
@@ -76,7 +81,7 @@ const submitForm = async (form_data, docs) => {
                 let file = docs[i];
                 formData.append('files[' + i + ']', file);
             }
-        }
+        }  
         
         formData.append('id', form_data.id);
         formData.append('name', form_data.name);
@@ -85,7 +90,8 @@ const submitForm = async (form_data, docs) => {
         formData.append('bus_contact_no', form_data.bus_contact_no);
         formData.append('bus_email', form_data.bus_email);
         formData.append('documents', d);
-        formData.append('terms_agreed_at', true);
+        // if (form_data.id == undefined) formData.append('terms_agreed_at', new Date());
+        
 
         const response = await axios.post('/api/partner/profile', formData, config);
         

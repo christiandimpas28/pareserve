@@ -104,7 +104,7 @@ class AdminController extends Controller
             $getArray = DB::table('product_report')
                 ->whereNull('listing_category_id')
                 ->groupBy('product_id')
-                ->having(DB::raw('count(product_id)'), '>', 2)
+                ->having(DB::raw('count(product_id)'), '>', 0)
                 ->pluck('product_id');
 
             $collection = DB::table('product_report')
