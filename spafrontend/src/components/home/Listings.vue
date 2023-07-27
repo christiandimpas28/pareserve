@@ -124,7 +124,7 @@ const fetchData = async (get_url) => {
             <div class="flex-1">
                 <ExploreListLg 
                     :collection="products" 
-                    :title="'Stay at our top unique properties'" 
+                    :title="'Stay at our Top Unique Properties'" 
                     :subtitle="'Lorem ipsum sum sum..'" 
                 />
             </div>

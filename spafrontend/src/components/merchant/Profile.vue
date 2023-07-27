@@ -13,7 +13,7 @@ const errorMsg = ref('');
 const parentView = ref('PROFILE');
 const listing_count = ref(0);
 const showModal = ref(false);
-const modalTitle = ref('Policies & Requirements');
+const modalTitle = ref('Affiliate Policy Agreement');
 const agree = ref(false);
 
 onMounted(() => {
@@ -156,10 +156,10 @@ const toggleModal = ()=>{
             <!-- <h2 class="text-title-md2 font-bold text-black white:text-dark mb-4">
                 Listings
             </h2> -->
-            <h2 class="text-2xl font-normal dark:text-dark">Where's your place located?</h2>
+            <h2 class="text-2xl font-normal dark:text-dark">Adding of Listings</h2>
             <div class="mb-4">
                 <p class="my-4 text-md text-gray-700">
-                    Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book...
+                    Listings are the proprietors' properties that have been declared to the proprietor's account or profile. Owners can add several listings to their accounts to manage all of their properties.
                 </p>
 
                 <router-link :to="{name: 'MerchantListings'}" class="block text-white bg-teal-700 hover:bg-teal-800 focus:ring-4 focus:outline-none focus:ring-teal-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center dark:bg-teal-600 dark:hover:bg-teal-700 dark:focus:ring-teal-800" type="button">
@@ -179,11 +179,11 @@ const toggleModal = ()=>{
                 <!--content-->
                 <div class="border-0 rounded-lg shadow-lg relative flex flex-col w-full bg-white outline-none focus:outline-none">
                 <!--header-->
-                <div class="flex items-start justify-between p-5 border-b border-solid border-slate-200 rounded-t">
-                    <h3 class="text-3xl font-semibold">
+                <div class="flex items-start justify-center p-5 border-b border-solid border-slate-200 rounded-t">
+                    <h3 class="text-3xl font-semibold justify-center w-auto">
                     {{ modalTitle }}
                     </h3>
-                    <button class="" v-on:click="toggleModal()">
+                    <button class="absolute top-2 right-2" v-on:click="toggleModal()">
                     <span class="font-semibold">
                         <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-8 h-8">
                             <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
@@ -192,8 +192,69 @@ const toggleModal = ()=>{
                     </button>
                 </div>
                 <!--body-->
-                <div class="relative p-6 flex-auto">
-                    Modal
+                <div class="relative p-6 flex-auto text-sm">
+                    <p>
+                        <ul>
+                            <li>1. <strong>Registration:</strong>
+                            </li>
+                            <ul class="pl-8">
+                                <li>
+                                    a. Merchants are required to provide proof of operation documents such as Business Permit, Mayor's Permit and 2 Government Valid Identifications) for verification.</li>
+                                <li>
+                                    b. Merchants are required to submit the said document so that their listings and products will be available in the platform.</li>
+                                <li>
+                                    c. Merchants must have the minimum room requirements between 26 and 300 guest rooms to be qualified in the platform.</li>
+                                <li>
+                                    d. Failure  to provide the said requirements will lead to account removed.</li>
+                                <li>
+                                    e. Account banned to falsification and having a massive report by their customer as scammers and alike.</li>
+                            </ul>
+                            
+                            
+                        </ul>
+                        <ul>
+                            <li>2. <strong>Terms and Conditions:</strong>
+                            </li>
+                            <ul class="pl-8">
+                                <li>
+                                    a.  <strong>Hotel Listing:</strong> Merchants shall ensure that all information provided for their respective hotel listings on the platform is accurate, complete, and up-to-date.</li>
+                                <li>
+                                    b. <strong>Availability and Rates:</strong> Merchants shall be responsible for managing and updating room availability and rates on the platform regularly.</li>
+                                <li>
+                                    c. <strong>Booking Confirmation:</strong> Merchants can get the information of any successful bookings made through the platform including guest information, dates, and payment details.</li>
+                                <li>
+                                    d. <strong>Payment:</strong> PaReserve shall facilitate the payment process with guests and remit the hotel room charges to the merchants after deducting any agreed-upon commission or fees every month.</li>
+                                <li>
+                                    e. <strong>Cancellations and Refunds:</strong> PaReserve shall follow the agreed-upon cancellation and refund policies set forth by the merchants for bookings made through the platform.</li>
+                                
+                            </ul>
+                            
+                        </ul>
+                        <ul>
+                            <li>3. <strong>Commission and Fees:</strong>
+                            </li>
+                            <ul class="pl-8">
+                                <li>
+                                    a.  Merchant agree to pay the Platform a commission, as specified in a separate commission agreement, for each successful booking made through the platform.</li>
+                                <li>
+                                    b. The commission percentage and any applicable fees shall be mutually agreed upon by both parties and outlined in a separate commission agreement.</li>
+                                
+                            </ul>
+                            
+                        </ul>
+                        <ul>
+                            <li>4. <strong>Confidentiality:</strong>
+                            </li>
+                            <ul class="pl-8">
+                                <li>
+                                    Both parties shall keep all non-public information, data, and materials shared during the course of this partnership confidential and not disclose them to any third party without prior written consent from the other party.</li>
+                                
+                            </ul>
+                            
+                        </ul>
+
+                    </p>
+                    <p></p>
 
                 </div>
                 <!--footer-->

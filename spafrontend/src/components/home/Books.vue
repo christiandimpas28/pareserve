@@ -36,6 +36,7 @@ onMounted(() => {
     }); 
     
     authStore.getUser('Product Details');
+    window.scrollTo(0,0);
 });
 
 const fetchData = async () => {
@@ -259,7 +260,7 @@ const pay = async () => {
                         <form method="POST" @submit.prevent="pay()">
                             <input type="hidden" id="booking_id" v-model="booking.id" />
                             <div v-if="allowToBook">
-                                <p class="text-sm mb-4">Next step will redirect you to secure payment page. lorem ipsum blah ...</p>
+                                <p class="text-sm mb-4">Next step will redirect you to secure payment page.</p>
                                 <button id="submit_payment" type="submit" class="flex w-full justify-center rounded-md bg-[#1A7D7A] px-3 py-4 text-lg font-semibold leading-6 text-white shadow-sm hover:bg-[#0F9C98] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600">{{ paymentActionTitle }}</button>
                             </div>
                             <div v-else class="text-center">
@@ -270,9 +271,9 @@ const pay = async () => {
 
                     <div class="mb-4">
                         <div class="w-full mb-2 select-none border-t-4 border-gray-400 bg-gray-100 p-4 font-medium hover:border-gray-500">
-                            <h4 class="font-semibold">PaReserve cancellation policies</h4>
-                            <p class="text-sm">when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries</p>
-                        </div>
+                            <h4 class="font-semibold">PaReserve Cancellation Policies</h4>
+                            <p class="text-sm">The cancellation is free of charge 3 days prior to the date of arrival, after this time  PaReserve will charge 90% the room rate as cancellation fee. </p>
+                        </div> 
                     </div>
                 </div>
             </div>

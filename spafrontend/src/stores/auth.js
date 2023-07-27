@@ -204,7 +204,7 @@ export const useAuthStore = defineStore("auth", {
         async handleLogout() {
             await axios.post('/logout');
             this.authUser=null;
-            this.router.push("/listings");
+            this.router.push({name: 'Home'});
             console.log('handleLogout 2');
         },
         async handleForgotPassword(email) {

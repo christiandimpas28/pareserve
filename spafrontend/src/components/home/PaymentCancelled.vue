@@ -64,7 +64,7 @@ console.log("Payment Cancelled");
             <div class="mb-4">
                 <p class="mb-4"></p>
                 <p class="mb-4">
-                    <router-link :to="{ name: 'Listings'}" class="hover:no-underline underline">Home</router-link> | 
+                    <router-link :to="{ name: 'Home'}" class="hover:no-underline underline">Home</router-link> | 
                     <a :href="checkoutLink" class="hover:no-underline underline">Back to Checkout page</a>
                 </p>
                 <h2 class="font-semibold text-2xl">Payment Cancelled</h2>

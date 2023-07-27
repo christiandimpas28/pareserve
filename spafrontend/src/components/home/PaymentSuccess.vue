@@ -61,7 +61,7 @@ console.log("Payment Success");
                 <h1 class="font-bold text-2xl">{{ bookingRefNo }}</h1>
                 <p class="mb-4"><span class="inline-block bg-gray-300 rounded-full px-3 py-1 text-md font-semibold text-gray-700 mr-2 mb-2 text-xs">Booking Reference Code</span></p>
                 <p class="mb-4">
-                    <router-link :to="{ name: 'Listings'}" class="hover:no-underline underline">Home</router-link>
+                    <router-link :to="{ name: 'Home'}" class="hover:no-underline underline">Home</router-link>
                 </p>
                 <h2 class="font-semibold text-2xl">Payment Successful</h2>
             </div>

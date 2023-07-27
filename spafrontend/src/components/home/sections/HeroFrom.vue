@@ -25,7 +25,7 @@ const submit = () => {
     <section class="pt-18 sm:pt-10 w-full h-[460px] flex flex-col sm:flex-row justify-evenly bg-[url('https://images.pexels.com/photos/7130472/pexels-photo-7130472.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1')] bg-cover bg-center">
         <div class="basis-1/2 lg:px-16 sm:px-4 relative">
             <h1 class="text-4xl text-white text-left px-16 pt-12 pb-4 font-bold">
-                Pa reserve namo Mam, Ser
+                Have a reservation with us!
                 <br />
                 <span class="text-2x1 font-normal text-transparent bg-clip-text bg-gradient-to-br from-[#28c71e] to-[#ffffff]">
                     Unleash the power of convenience by booking your preferred accommodation in just a few clicks.

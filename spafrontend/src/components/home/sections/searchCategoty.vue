@@ -36,11 +36,14 @@ const search = (param) => {
 
 </script>
 <template>
-<div class="p-2 inline-grid gap-2 grid-cols-12 xs:grid-cols-4 w-full text-sm">
-    <div @click="search(item)" v-for="item in categories" class="h-[80px] max-w-[48px] sm:w-[38px] mx-auto items-center content-center text-center hover:border-b-2 border-gray-600 cursor-pointer">
-        <img :src="item.img" width="24" height="24" class="object-cover w-full" />
-        <p class="text-xs">{{ item.name }}</p>
-    </div>
+<div class="flex items-center justify-center mt-6">
+      
+    <ul class="flex gap-8">
+        <li @click="search(item)" v-for="item in categories" class="h-[80px] max-w-[48px] sm:w-[38px] mx-auto items-center content-center text-center hover:border-b-2 border-gray-600 cursor-pointer">
+            <img :src="item.img" width="24" height="24" class="object-cover w-full" />
+            <p class="text-xs">{{ item.name }}</p>
+        </li>
+    </ul>
     <!-- <router-link :to="{ name: 'Listings'}">
         <div class="h-[80px] max-w-[48px] sm:w-[38px] mx-auto items-center content-center text-center hover:border-b-2 border-gray-600 cursor-pointer">
             <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-10 h-10">

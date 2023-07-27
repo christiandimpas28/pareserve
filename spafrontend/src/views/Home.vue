@@ -159,11 +159,12 @@ const fetchData = async (get_url) => {
             <div class="fles-1 mb-4">
                 <SearchForm @search-form="getSearch" :form="searchParam" />
             </div>
+            
             <div class="flex-1">
-                <div class="mb-4 mt-8 items-center justify-center">
-                    <h1 class="font-semibold text-3xl">Stay at our top unique properties</h1>
-                    <p>From hotels and villas to resorts and vacation houses, we've got it all</p>
-                    <div>
+                <div class="mb-4 mt-8 items-center justify-center max-w-full">
+                    <h1 class="font-semibold text-3xl mx-auto text-center">Stay at our Top Unique Properties</h1>
+                    <p class="mx-auto text-center">Hotels in the cities with exciting offers, we've got it all</p>
+                    <div class="mx-auto text-center justify-center">
                         <SearchCategory></SearchCategory>
                     </div>
                 </div>

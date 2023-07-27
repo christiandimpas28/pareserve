@@ -131,11 +131,8 @@ const emit = defineEmits(['submitdata']);
   
   <div class="mx-auto w-full max-w" v-if="formState==0">
     <h1 class="text-2xl sm:text-xl font-medium flex justify-center">
-      Set up your Business Profile.
+      Setup your Business Profile
     </h1>
-    <p>
-      Lorem Ipsum is simply dummy text of the printing and typesetting industry.
-    </p>
     <div class="flex justify-center">
       <button class="text-white my-4 bg-teal-700 hover:bg-teal-800 focus:ring-4 focus:outline-none focus:ring-teal-300 font-medium rounded-lg text-sm w-auto px-5 py-2.5 text-center dark:bg-teal-600 dark:hover:bg-teal-700 dark:focus:ring-teal-800" @click.prevent="formState=2">
         Start

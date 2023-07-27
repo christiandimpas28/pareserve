@@ -29,7 +29,7 @@ class ProductReviewsController extends Controller
             'product_id' => ['required'],
             'book_id' => ['required'],
             'rating' => ['required'],
-            'review' => ['required', 'min:100', 'max:5000'],
+            'review' => ['required', 'min:50', 'max:5000'],
         ]);
 
         $files = [];
