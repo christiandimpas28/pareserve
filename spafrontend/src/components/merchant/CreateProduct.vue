@@ -106,10 +106,10 @@ const showToast = (mode) => {
     <div class="mx-auto max-w-2xl">
         <div>
             <h1 class="product-title">
-                What kind fo place will you host?
+                What kind of place will you host?
             </h1>
             <p class="my-4 text-md text-gray-700">
-                Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s
+                Enjoy full control over room availability, rates, and special offers, allowing you to optimize occupancy and revenue.
             </p>
         </div>
         <div>

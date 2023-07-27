@@ -28,15 +28,15 @@ const submit = () => {
                 Pa reserve namo Mam, Ser
                 <br />
                 <span class="text-2x1 font-normal text-transparent bg-clip-text bg-gradient-to-br from-[#28c71e] to-[#ffffff]">
-                    Lorem Ipsum is simply dummy text of the iut ell ew..
+                    Unleash the power of convenience by booking your preferred accommodation in just a few clicks.
                 </span>
             </h1>
         </div>
         <div class="basis-1/2 mx-auto">
             <div class="border rounded-lg shadow-xl shadow-zinc-900 border-gray-300 h-[280px] w-[400px] sm:w-2/2 2x1:w-2/2 sm:-h-4/6 justify-center items-center bg-gray-50">
                 <div class="flex flex-col gap-2 w-3/4 item-center mx-auto pt-6">
-                    <h1 class="text-gray-900 text-xl font-semibold mt-4">Search locations, hotels, homes, resorts, and much more...</h1>
-                    <p class="text-gray-700 text-sm font-normal">Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard..</p>
+                    <h1 class="text-gray-900 text-xl font-semibold mt-4">Search deals on hotels, rooms, breakfast & bed, and location!  </h1>
+                    <p class="text-gray-700 text-sm font-normal">Plan your perfect escape with ease, effortlessly browsing through a curated selection of Davao's top-rated hotels!</p>
                     <form @submit.prevent="submit()" method="POST">   
                         <label for="query" class="mb-2 text-sm font-medium text-gray-900 sr-only dark:text-white">Search</label>
                         <div class="relative">

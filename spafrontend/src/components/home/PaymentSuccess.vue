@@ -67,8 +67,7 @@ console.log("Payment Success");
             </div>
 
             <div class="my-10 text-sm">
-                <p class="mb-2">It is a long established fact that a reader will be distracted by the readable content of a page when looking at its layout. </p>
-                <p>The point of using Lorem Ipsum is that it has a more-or-less normal distribution of letters, as opposed to using 'Content here,</p>
+                <p class="mb-2">We hope you have a delightful stay with us. If you have any questions or need assistance regarding your payment, feel free to email us at pareserve@gmail.com. Thank you for choosing PareServe!</p>
             </div>
         </div>
     </div>

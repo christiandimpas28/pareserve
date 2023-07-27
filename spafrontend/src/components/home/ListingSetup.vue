@@ -24,7 +24,7 @@ const form = ref({
                 Ready to get started Mam,Ser?
             </h1>
             <p class="mb-8 md:pl-0  pl-2 pr-2 leading-relaxed dark:text-gray-300">
-                Let's Goooo! Join us today and unlock access to high-value guests. <br/> Signing up is free, fast, and easy.
+                Let's Gooo! Plan your perfect escape with ease, effortlessly browsing through a curated selection of Davao's top-rated hotels! <br/> Signing up is free, fast, and easy.
             </p>
             <div class="flex justify-center">
                 <a href="#"
@@ -62,7 +62,7 @@ const form = ref({
                 <div class="flex">
                     <div class="ml-6">
                         <h2 class="text-sm font-semibold leading-6 text-slate-900">List any type of property</h2>
-                        <p class="mt-2 text-sm leading-6 text-slate-700">Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s.</p>
+                        <p class="mt-2 text-sm leading-6 text-slate-700">Enjoy peace of mind with secure and encrypted listing information and transactions, for worry-free reservations.</p>
                     </div>
                 </div>
                 <div class="flex">
@@ -103,10 +103,7 @@ const form = ref({
       
       <h2 class="text-3xl font-bold mb-6">Sign up and start welcoming guests today!</h2>
       <p class="text-gray-500 mb-6">
-        Lorem ipsum dolor sit amet consectetur adipisicing elit.
-        Laudantium, modi accusantium ipsum corporis quia asperiores
-        dolorem nisi corrupti eveniet dolores ad maiores repellendus enim
-        autem omnis fugiat perspiciatis? Ad, veritatis.
+        Embrace peace of mind with our state-of-the-art security system, designed to safeguard your valuable data, only here at Pareserve!
       </p>
       
     </div>

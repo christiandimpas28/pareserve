@@ -199,7 +199,7 @@ watch(() => price_end.value, (c, b) => {
                     <SearchResult
                         :collection="view_collection" 
                         :title="'Your Search'" 
-                        :subtitle="'Lorem ipsum sum sum, Xi xtru..'" 
+                        :subtitle="'Unwind in sumptuously appointed rooms and suites that redefine comfort.'" 
                         @cviewDetails="viewDetails"
                     />
                 </div>

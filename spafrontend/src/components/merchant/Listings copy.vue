@@ -67,7 +67,7 @@ export default {
         <div class="w-26 flex rounded-md bg-gray-300 p-8 flow-root">
             <h2 class="text-2xl font-normal dark:text-dark">Where's your place located?</h2>
             <div>
-                <p class="my-4 text-lg text-gray-700">Lorem ipsum dolor sit amet consectetur adipisicing elit.</p>
+                <p class="my-4 text-lg text-gray-700">Enjoy full control over room availability, rates, and special offers, allowing you to optimize occupancy and revenue.</p>
                 <button data-modal-target="staticModal" data-modal-toggle="staticModal" class="block text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800" type="button">
                     Add New Listing
                 </button>
@@ -146,7 +146,7 @@ export default {
                 <form>
                     <div class="p-6 space-y-6">
                         <p class="text-base leading-relaxed text-gray-500 dark:text-gray-400">
-                            Lorem ipsum dolor sit amet consectetur adipisicing elit.
+                            Benefit from real-time updates and instant confirmations, streamlining the booking process for both you and your guests.
                         </p>
                         
                         <div class="grid gap-6 mb-6 md:grid-cols-2">
