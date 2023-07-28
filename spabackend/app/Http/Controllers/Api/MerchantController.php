@@ -8,6 +8,7 @@ use App\Models\Integration;
 use Illuminate\Http\Request;
 use App\Traits\HttpResponses;
 use App\Models\ListingCategory;
+use Illuminate\Support\Facades\DB;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Crypt;
@@ -261,6 +262,47 @@ class MerchantController extends Controller
         }
 
         return $this->success($now, 'Success', 200);
+    }
+
+    public function cases(Request $request){
+        $user = $request->user();
+        if (strtoupper($user->user_type) !== 'PARTNER') {
+            return $this->error('', 'Forbidden. You dont have permission to access.', 403);
+        }
+
+        if (!isset($request['qids'])){
+            return $this->error($record, 'No record found.', 404);
+        }
+
+        $qids = base64_decode($request['qids']);
+        $arr_ids = explode(",",$qids);
+        try {
+            
+            $collection = DB::table('product_report')
+                ->whereIn('product_report.product_id', $arr_ids)
+                ->leftJoin('users', 'product_report.user_id','=','users.id')
+                ->leftJoin('books', 'product_report.books_id','=','books.id')
+                ->leftJoin('products', 'product_report.product_id','=','products.id')
+                ->leftJoin('listing_categories', 'listing_categories.id','=','products.listing_category_id')
+                ->orderBy('product_report.created_at', 'desc')
+                ->get([
+                    'product_report.id AS product_report_id',
+                    'product_report.*',
+                    'users.id', 'users.name', 'users.email', 'users.user_type',
+                    'books.product_name', 'books.product_photo', 'books.product_category', 
+                    'books.product_address', 'books.number_of_guest', 'books.from', 'books.to', 'books.days',
+                    'books.total', 'books.booking_status',
+                    'products.listing_category_id',
+                    'listing_categories.id AS listing_categories_primary',  
+                    'listing_categories.enabled AS listing_categories_enabled', 
+                    'listing_categories.name AS listing_categories_name'
+                ]);
+
+            return $this->success($collection, 'Success', 200);
+
+        } catch (\Throwable $th) {
+            return $this->error('', $th->getMessage(), 400);
+        }
     }
 
     /**

@@ -1,5 +1,5 @@
 <script setup>
-import { toRef, ref, watch } from 'vue';
+import { onMounted, ref, watch } from 'vue';
 import SimpleToast from '../SimpleToast.vue';
 import axios from "axios";
 
@@ -7,9 +7,18 @@ const selectedItem = ref({});
 const showModal = ref(false);
 const modalTitle = ref('');
 const toastMessage = ref('Oops!');
+const caseCollection = ref([]);
+const fetchState = ref(-1);
+const recommendedAction = ref('Suspend Listing');
+const listingState = ref('Enabled');
 
 const props = defineProps({
     cases: { type: Array, default: [] },
+});
+
+onMounted(async ()=> {
+    fetchState.value = -1;
+    await fetchCases();
 });
 
 watch(() => props.cases, (c, b) => { 
@@ -19,16 +28,43 @@ watch(() => props.cases, (c, b) => {
 const takeAction = (item) => {
     selectedItem.value = item;
     modalTitle.value = 'Action';
-    console.log("takeAction", selectedItem.value);
+    recommendedAction.value = "Suspend Listing";
+    listingState.value = "Enabled";
+    if (selectedItem.value && selectedItem.value.listing_categories_enabled == 0) {
+        recommendedAction.value = "Reconsider";
+        listingState.value = "Disabled";
+    }
+        
+
+    console.log("takeAction", selectedItem.value, "Enabled:", selectedItem.value.listing_categories_enabled);
     toggleModal();
 }
+
+const fetchCases = async () => {
+    const response = await axios.get("/api/admin/reported/cases").catch((err) => {
+        const message = 'An error has occured: ${response.status}';
+        throw new Error(message);
+    });
+
+    caseCollection.value = await response.data.data;
+    if (caseCollection.value.length==0) 
+        fetchState.value = 0;
+    else
+        fetchState.value = 1;
+
+    console.log("Cases:", caseCollection.value);
+}
+
 
 const updateStatus = async () => {
     console.log("updateStatus", selectedItem.value);
 
+    let stateValue = 0;
+    if (selectedItem.value.listing_categories_enabled == 0) stateValue=1;
+
     try {
         const response = await axios.post('/api/admin/report/update/status/'+selectedItem.value.product_report_id+'/'+selectedItem.value.product_id, {
-            state: 0,
+            state: stateValue,
         });
         
         if (!response) {
@@ -36,6 +72,18 @@ const updateStatus = async () => {
             throw new Error(response);
         }
         console.log("Update Response: ", response.data);
+
+        caseCollection.value.forEach( (item, i) => {
+            if (selectedItem.value.product_report_id == item.product_report_id) {
+                item.listing_categories_enabled = stateValue;
+            }
+        });
+
+        props.cases.forEach( (item, i) => {
+            if (selectedItem.value.product_report_id == item.product_report_id) {
+                item.listing_categories_enabled = stateValue;
+            }
+        });
 
         if (props.cases.length>0) {
             props.cases.forEach(function(item, index, object) {
@@ -49,6 +97,7 @@ const updateStatus = async () => {
         toastMessage.value = response.data.message;
         showToast(1);
     } catch (error) {
+        console.log("ERROR", error);
         toastMessage.value = error.response.data.message;
         showToast(3);
     }
@@ -78,7 +127,7 @@ const showToast = (mode) => {
 
                 <div class="mb-8">                
                     <h1 class="flex justify-start py-2 font-semibold text-lg">For Review Recent Alarming Cases</h1>
-                    <div v-if="cases.length==0">No open case</div>
+                    <div v-if="cases.length==0">No alarming cases found</div>
                     <table class="w-full text-sm text-left text-gray-700 border-gray-600 rounded-lg" v-if="cases.length>0">
                         <thead class="text-xs text-gray-700 uppercase bg-gray-200 ">
                             <tr>
@@ -86,7 +135,7 @@ const showToast = (mode) => {
                                     Product Name
                                 </th>
                                 <th scope="col" class="px-6 py-3">
-                                    Address
+                                    Listing
                                 </th>
                                 <th scope="col" class="px-6 py-3">
                                     Booked Dates
@@ -118,8 +167,8 @@ const showToast = (mode) => {
                                 <th scope="row" class="px-6 py-4 font-medium text-gray-900 whitespace-nowrap white:text-dark">
                                     {{ item.product_name }}
                                 </th>
-                                <td class="px-6 py-4">
-                                    {{ item.product_address }}
+                                <td class="px-6 py-4 truncate">
+                                    {{ item.listing_categories_name }}
                                 </td>
                                 <td class="px-6 py-4 truncate">
                                     From: {{ item.from }} To: {{ item.to }}
@@ -133,13 +182,84 @@ const showToast = (mode) => {
                                 <td class="px-6 py-4 truncate">
                                     {{ item.email }}
                                 </td>
-                                <td class="px-6 py-4 truncate">
+                                <td class="px-6 py-4">
                                     {{ item.related_to }}
                                 </td>
                                 <td class="px-6 py-4">
-                                    {{ item.remarks }}
+                                    <div class="w-[200px] truncate">{{ item.remarks }}</div>
+                                </td>
+                                <td class="px-6 py-4">
+                                    <button @click="takeAction(item)" class="px-4 py-2 bg-cyan-500 hover:bg-cyan-700 text-gray-900 hover:text-gray-200 font-semibold rounded-lg">Take Action</button>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <div class="mb-8">                
+                    <h1 class="flex justify-start py-2 font-semibold text-lg">Reported Products</h1>
+                    <div v-if="caseCollection.length==0 && fetchState==0">No record found</div>
+                    <table class="w-full text-sm text-left text-gray-700 border-gray-600 rounded-lg" v-if="caseCollection.length>0">
+                        <thead class="text-xs text-gray-700 uppercase bg-gray-200 ">
+                            <tr>
+                                <th scope="col" class="px-6 py-3">
+                                    Product Name
+                                </th>
+                                <th scope="col" class="px-6 py-3">
+                                    Listing
+                                </th>
+                                <th scope="col" class="px-6 py-3">
+                                    Booked Dates
+                                </th>
+                                <th scope="col" class="px-6 py-3">
+                                    Booking Status
+                                </th>
+                                <th scope="col" class="px-6 py-3">
+                                    Booked By Name
+                                </th>
+                                <th scope="col" class="px-6 py-3">
+                                    Booked By Email
+                                </th>
+                                <th scope="col" class="px-6 py-3">
+                                    Report Category
+                                </th>
+                                <th scope="col" class="px-6 py-3">
+                                    Report Remarks
+                                </th>
+                                <th scope="col" class="px-6 py-3">
+                                    Action
+                                </th>
+                                
+                            </tr>
+                        </thead>
+
+                        <tbody v-if="caseCollection.length>0">
+                            <tr class="bg-white border-b" v-for="item in caseCollection">
+                                <th scope="row" class="px-6 py-4 font-medium text-gray-900 whitespace-nowrap white:text-dark">
+                                    {{ item.product_name }}
+                                </th>
+                                <td class="px-6 py-4 truncate">
+                                    {{ item.listing_categories_name }}
                                 </td>
                                 <td class="px-6 py-4 truncate">
+                                    From: {{ item.from }} To: {{ item.to }}
+                                </td>
+                                <td class="px-6 py-4 truncate">
+                                    {{ item.booking_status }}
+                                </td>
+                                <td class="px-6 py-4 truncate">
+                                    {{ item.name }}
+                                </td>
+                                <td class="px-6 py-4 truncate">
+                                    {{ item.email }}
+                                </td>
+                                <td class="px-6 py-4">
+                                    {{ item.related_to }}
+                                </td>
+                                <td class="px-6 py-4">
+                                    <div class="w-[200px] truncate">{{ item.remarks }}</div>
+                                </td>
+                                <td class="px-6 py-4">
                                     <button @click="takeAction(item)" class="px-4 py-2 bg-cyan-500 hover:bg-cyan-700 text-gray-900 hover:text-gray-200 font-semibold rounded-lg">Take Action</button>
                                 </td>
                             </tr>
@@ -169,8 +289,30 @@ const showToast = (mode) => {
                 </div>
                 <!--body-->
                 <div class="relative p-6 flex-auto">
-                    <div class="mb-4 p-8">
-                        Suspend Listing.
+                    <div class="mb-4 p-4">
+                        <div class="grid grid-cols-2 mb-4">
+                            <div>
+                                <p>{{ selectedItem.product_name }}</p>
+                                <p class="text-sm">{{ selectedItem.listing_categories_name  }}</p>
+                                <p class="text-sm">{{ selectedItem.product_address }}</p>
+                            </div>
+                            <div>
+                                <p>Reported By: {{ selectedItem.name }}</p>
+                                <p class="text-sm">{{ selectedItem.email }}</p>
+                            </div>
+                        </div>
+                        <div class="mb-4">
+                            <strong>Case Related To:</strong> {{ selectedItem.related_to }}
+                        </div>
+                        <div class="mb-4">
+                            <p><strong>Remarks:</strong></p>
+                            <p>{{ selectedItem.remarks }}</p>
+                        </div>
+                        <div class="mb-4">
+                            <p><strong>Current Listing Status:</strong> {{ listingState }}</p>
+                            <p><strong>Action:</strong> {{ recommendedAction }}</p>
+                        </div>
+                        
                     </div>
                 </div>
                 <!--footer-->

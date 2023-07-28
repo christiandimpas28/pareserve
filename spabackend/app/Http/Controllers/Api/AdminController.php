@@ -111,6 +111,7 @@ class AdminController extends Controller
                 ->leftJoin('users', 'product_report.user_id','=','users.id')
                 ->leftJoin('books', 'product_report.books_id','=','books.id')
                 ->leftJoin('products', 'product_report.product_id','=','products.id')
+                ->leftJoin('listing_categories', 'listing_categories.id','=','products.listing_category_id')
                 ->whereNull('product_report.listing_category_id')
                 ->whereIn('product_report.product_id', $getArray)
                 ->get([
@@ -120,7 +121,37 @@ class AdminController extends Controller
                     'books.product_name', 'books.product_photo', 'books.product_category', 
                     'books.product_address', 'books.number_of_guest', 'books.from', 'books.to', 'books.days',
                     'books.total', 'books.booking_status',
-                    'products.listing_category_id'
+                    'products.listing_category_id',
+                    'listing_categories.id AS listing_categories_primary',  
+                    'listing_categories.enabled AS listing_categories_enabled', 
+                    'listing_categories.name AS listing_categories_name'
+                ]);
+
+            return $this->success($collection, 'Success', 200);
+        } catch (\Throwable $th) {
+            return $this->error('', $th->getMessage(), 400);
+        }
+    }
+
+    public function cases(Request $request) {
+        $this->validateLoggedUser($request, 'ADMIN');
+        try {
+            $collection = DB::table('product_report')
+                ->leftJoin('users', 'product_report.user_id','=','users.id')
+                ->leftJoin('books', 'product_report.books_id','=','books.id')
+                ->leftJoin('products', 'product_report.product_id','=','products.id')
+                ->leftJoin('listing_categories', 'listing_categories.id','=','products.listing_category_id')
+                ->get([
+                    'product_report.id AS product_report_id',
+                    'product_report.*',
+                    'users.id', 'users.name', 'users.email', 'users.user_type',
+                    'books.product_name', 'books.product_photo', 'books.product_category', 
+                    'books.product_address', 'books.number_of_guest', 'books.from', 'books.to', 'books.days',
+                    'books.total', 'books.booking_status',
+                    'products.listing_category_id',
+                    'listing_categories.id AS listing_categories_primary',  
+                    'listing_categories.enabled AS listing_categories_enabled', 
+                    'listing_categories.name AS listing_categories_name'
                 ]);
 
             return $this->success($collection, 'Success', 200);
@@ -151,7 +182,20 @@ class AdminController extends Controller
             //code...
             if ($productReport !== null && $product !== null) {
                 DB::transaction(function () use ($request, $productReport, $product) {
-                    $productReport->update(['listing_category_id'=>$product->listing_category_id]);
+                    if ($request->state==1) {
+                        $productReport->update([
+                            'listing_category_id'=> null,
+                            'settled'=> $request->state
+                            ]
+                        );
+                    } else {
+                        $productReport->update([
+                            'listing_category_id'=> $product->listing_category_id,
+                            'settled'=> $request->state
+                            ]
+                        );
+                    }
+                    
                     ListingCategory::where('id', $product->listing_category_id)->update(['enabled' => $request->state]);
                 });
                 

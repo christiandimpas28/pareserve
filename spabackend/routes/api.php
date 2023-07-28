@@ -63,6 +63,7 @@ Route::group(['middleware' => ['auth:sanctum', 'verifyaccess']], function () {
     //Merchant
     Route::get('/merchants', [MerchantController::class, 'index']);
     Route::get('/partner/profile', [MerchantController::class, 'show']);
+    Route::get('partner/reported/products', [MerchantController::class, 'cases']);
     Route::post('/partner/profile', [MerchantController::class, 'update']);
     Route::post('/partner/setup/terms/{merchant}', [MerchantController::class, 'agree']);
     Route::delete('/partner/profile/{merchant}', [MerchantController::class, 'destroy']);
@@ -122,6 +123,7 @@ Route::group(['middleware' => ['auth:sanctum', 'verifyaccess']], function () {
     Route::get('/admin/merchants', [AdminController::class, 'merchants']);
     Route::get('/admin/transaction/totals', [AdminController::class, 'totals']);
     Route::get('/admin/alarming/cases', [AdminController::class, 'alarmingCases']);
+    Route::get('/admin/reported/cases', [AdminController::class, 'cases']);
 
     Route::post('/admin/merchant/update/status/{merchant}', [AdminController::class, 'updateMerchantStatus']);
 
