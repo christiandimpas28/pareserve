@@ -201,7 +201,10 @@ class MerchantController extends Controller
         if ($request->id == 'undefined'){
             $request['terms_agreed_at'] = now();
             $isNew = true;
-        }        
+        } 
+    
+        if ($request->terms_agreed_at === "null")
+            $request['terms_agreed_at'] = now();
 
         $files = [];
         // $request->listing_photos = null;
@@ -232,9 +235,9 @@ class MerchantController extends Controller
         }
 
         $table_cols = ['name', 'bus_contact_name', 'bus_contact_no', 'bus_email', 'bus_address', 'documents', 'terms_agreed_at'];
-        if (!$isNew) {
-            $table_cols = ['name', 'bus_contact_name', 'bus_contact_no', 'bus_email', 'bus_address', 'documents'];
-        }
+        // if (!$isNew) {
+        //     $table_cols = ['name', 'bus_contact_name', 'bus_contact_no', 'bus_email', 'bus_address', 'documents'];
+        // }
         $user->Merchant()->updateOrCreate(
             ['user_id' => $user->id],
             $request->only($table_cols)

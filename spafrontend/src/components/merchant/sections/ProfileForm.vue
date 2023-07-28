@@ -12,16 +12,19 @@ const props = defineProps({
         terms_agreed_at: null,
     } 
   },
-  formState: { type: Number, default: -1 },
+  formstate: { type: Number, default: -1 },
   errorMsg: { type: String, default: 'Oops! Something went wrong.' },
   agree: { type: Boolean, default: false },
 });
 
-toRef(() => props.formState);
+toRef(() => props.formstate);
 toRef(() => props.errorMsg);
 toRef(() => props.agree);
-// const formState.value = computed(() => props.formState);
+// const formstate.value = computed(() => props.formstate);
 // toRefs 
+watch(() => props.formstate, (c, b) => { 
+  console.log("formstate - ", c, " BEFORE: ", b);
+});
 
 const formAgree = ref(false);
 const docsFile = ref([]);
@@ -112,7 +115,7 @@ const agreeAction = () => {
   console.log('agreeAction: ', formAgree.value);
 }
 
-const emit = defineEmits(['submitdata']);
+const emit = defineEmits(['submitdata', 'showtp']);
 
 // const submit = (item) => {
 //     emit('submitdata', item );
@@ -129,22 +132,22 @@ const emit = defineEmits(['submitdata']);
   <!-- Author: FormBold Team -->
   <!-- Learn More: https://formbold.com -->
   
-  <div class="mx-auto w-full max-w" v-if="formState==0">
+  <div class="mx-auto w-full max-w" v-if="formstate==0">
     <h1 class="text-2xl sm:text-xl font-medium flex justify-center">
       Setup your Business Profile
     </h1>
     <div class="flex justify-center">
-      <button class="text-white my-4 bg-teal-700 hover:bg-teal-800 focus:ring-4 focus:outline-none focus:ring-teal-300 font-medium rounded-lg text-sm w-auto px-5 py-2.5 text-center dark:bg-teal-600 dark:hover:bg-teal-700 dark:focus:ring-teal-800" @click.prevent="formState=2">
+      <button class="text-white my-4 bg-teal-700 hover:bg-teal-800 focus:ring-4 focus:outline-none focus:ring-teal-300 font-medium rounded-lg text-sm w-auto px-5 py-2.5 text-center dark:bg-teal-600 dark:hover:bg-teal-700 dark:focus:ring-teal-800" @click.prevent="formstate=2">
         Start
       </button>
     </div>
   </div>  
 
-  <div v-if="formState==1">
+  <div v-if="formstate==1">
     <div class="items-center justify-center w-full text-center">
         <h1 class="text-3xl font-medium">
           {{ form.name }}
-          <button @click="formState=2">
+          <button @click="formstate=2">
             <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-5 h-5 ml-2 ">
               <path stroke-linecap="round" stroke-linejoin="round" d="M16.862 4.487l1.687-1.688a1.875 1.875 0 112.652 2.652L10.582 16.07a4.5 4.5 0 01-1.897 1.13L6 18l.8-2.685a4.5 4.5 0 011.13-1.897l8.932-8.931zm0 0L19.5 7.125M18 14v4.75A2.25 2.25 0 0115.75 21H5.25A2.25 2.25 0 013 18.75V8.25A2.25 2.25 0 015.25 6H10" />
             </svg>
@@ -176,7 +179,7 @@ const emit = defineEmits(['submitdata']);
     </div>
   </div>
 
-  <div class="mx-auto w-full max-w-[650px] bg-white" v-if="formState==2">
+  <div class="mx-auto w-full max-w-[650px] bg-white" v-if="formstate==2">
     <form @submit.prevent="$emit('submitdata', form, filesUpload)" method="POST" enctype="multipart/form-data">
 
       <div class="mb-5" v-if="docsFile.length>0">
@@ -318,7 +321,10 @@ const emit = defineEmits(['submitdata']);
       <div class="mb-6" v-if="form.terms_agreed_at==undefined || form.terms_agreed_at === null">
         <div class="flex items-center mb-5">
           <input id="agree" type="checkbox" v-model="formAgree" class="w-4 h-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500 focus:ring-2 white:bg-gray-100 dark:border-gray-600">
-          <span><label for="agree" class="ml-2 text-sm font-medium text-gray-900 white:text-gray-900">Yes,</label> I agree to the terms & policies.</span>
+          <span><label for="agree" class="ml-2 text-sm font-medium text-gray-900 white:text-gray-900">Yes,</label> 
+            I agree to the 
+            <a @click.prevent="$emit('showtp')" class="underline text-blue-600 hover:no-underline">Terms & Policies.</a>
+          </span>
         </div>
       </div>
 
@@ -326,7 +332,7 @@ const emit = defineEmits(['submitdata']);
         <button v-show="formAgree" class="text-white mr-4 bg-cyan-700 hover:bg-cyan-800 focus:ring-4 focus:outline-none focus:ring-cyan-300 font-medium rounded-lg text-sm w-auto px-5 py-2.5 text-center dark:bg-cyan-600 dark:hover:bg-cyan-700 dark:focus:ring-cyan-800">
           Save
         </button>
-        <button @click.prevent="()=>{ formState = form.id!==undefined? 1: 0; }" class="text-slate-400 hover:text-sky-400 content-stretch">
+        <button @click.prevent="()=>{ formstate = form.id!==undefined? 1: 0; }" class="text-slate-400 hover:text-sky-400 content-stretch">
           <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6 inline-block">
             <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
           </svg>
@@ -372,11 +378,11 @@ const emit = defineEmits(['submitdata']);
   //   // },
   //   methods: {
   //     submit(fromData) {
-  //       // console.log("Emit Submit Sate ", this.formState);
+  //       // console.log("Emit Submit Sate ", this.formstate);
   //       this.$emit('save-data', fromData);
   //     },
   //     showToast(mode) {
-  //       // this.formState = state;
+  //       // this.formstate = state;
   //       this.$emit('show-toast', mode);
   //     }
   //   },

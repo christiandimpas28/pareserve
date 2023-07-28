@@ -90,17 +90,18 @@ const submitForm = async (form_data, docs) => {
         formData.append('bus_contact_no', form_data.bus_contact_no);
         formData.append('bus_email', form_data.bus_email);
         formData.append('documents', d);
-        // if (form_data.id == undefined) formData.append('terms_agreed_at', new Date());
+        formData.append('terms_agreed_at', form_data.terms_agreed_at);
         
-
         const response = await axios.post('/api/partner/profile', formData, config);
         
         if (!response) {
             const message = 'An error has occured: ${response.status}';
             throw new Error(message);
         }
-        showToast(1);
+        console.log("Old Value", form.value);
         form.value = response.data.merchant;
+        showToast(1);
+        formState.value = 1;
         console.log("New Value", form.value);
     } catch (error) {
         errorMsg.value=error.message;
@@ -121,9 +122,19 @@ const showToast = (mode) => {
 }
 
 const toggleModal = ()=>{
-    if (agree.value === false) return;
     showModal.value = !showModal.value;
 }
+
+const acceptTP = () =>{
+    if (agree.value === false) return;
+    formState.value = 2;
+    toggleModal();
+}
+
+const showTermsPolicies = () =>{
+    toggleModal();
+}
+
 
 </script>
 
@@ -147,10 +158,11 @@ const toggleModal = ()=>{
 
         <ProfileForm 
             :form="form"
-            :form-state="formState"
+            :formstate="formState"
             :error-msg="errorMsg"
             :agree="agree"
             @submitdata="submitForm"
+            @showtp="showTermsPolicies"
         />
         <div class="mt-10">
             <!-- <h2 class="text-title-md2 font-bold text-black white:text-dark mb-4">
@@ -183,7 +195,7 @@ const toggleModal = ()=>{
                     <h3 class="text-3xl font-semibold justify-center w-auto">
                     {{ modalTitle }}
                     </h3>
-                    <button class="absolute top-2 right-2" v-on:click="toggleModal()">
+                    <button class="absolute top-2 right-2" v-on:click="acceptTP()">
                     <span class="font-semibold">
                         <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-8 h-8">
                             <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
@@ -264,7 +276,7 @@ const toggleModal = ()=>{
                         <label for="agree" class="ml-2 text-sm font-medium text-gray-900 white:text-gray-900">Yes, I agree to the terms & policies.</label> 
                     </div>
                     <div class="flex justify-end ">
-                        <button class="text-gray-100 bg-teal-400 px-6 rounded-lg font-bold uppercase py-4 text-sm outline-none focus:outline-none mb-1 ease-linear transition-all duration-150" type="button" v-on:click="toggleModal()">
+                        <button class="text-gray-100 bg-teal-400 px-6 rounded-lg font-bold uppercase py-4 text-sm outline-none focus:outline-none mb-1 ease-linear transition-all duration-150" type="button" v-on:click="acceptTP()">
                         Ok
                         </button> 
                     </div>

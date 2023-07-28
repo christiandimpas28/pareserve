@@ -1,5 +1,5 @@
 <script setup>
-import { toRef, ref, watch } from 'vue';
+import { toRef, ref, watch, onMounted } from 'vue';
 import SimpleToast from '../SimpleToast.vue';
 import axios from "axios";
 
@@ -31,6 +31,18 @@ watch(() => props.merchants, (c, b) => {
     }
 });
 
+onMounted(() => {
+    console.log("Ini Collection onMounted: ", props.merchants.length);
+    if (props.merchants !==null && props.merchants.length>0) {
+        pendings.value.length = 0;
+        props.merchants.forEach( (item, idx) => {
+            if (item.status !== 1) {
+                pendings.value.push(item);
+            }
+        });
+    }
+});
+
 const toggleModal = ()=>{
     showModal.value = !showModal.value;
 }
@@ -39,11 +51,15 @@ const review = (item, title='Review Application') => {
     modalTitle.value = title;
     selectedItem.value = item;
 
+    docFiles.value.length=0;
+    docImages.value.length=0;
+    docFiles.value= [];
+    docImages.value= [];
+
     if (item.documents !== null && item.documents.length>0) {
         const arr_files = item.documents.split(',');
         if (arr_files.length>0){
-            docFiles.value.length=0;
-            docImages.value.length=0;
+            
 
             arr_files.forEach( (item,i) => {
                 let item_name = item.replace(/^\s+|\s+$/gm,'');
@@ -61,7 +77,7 @@ const review = (item, title='Review Application') => {
                 }
             });
         }
-        console.log("arr_files", docFiles.value, " img:", docImages.value);
+        // console.log("arr_files", docFiles.value, " img:", docImages.value);
     }
 
     // console.log("For Review Application: ", item);
