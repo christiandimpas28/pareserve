@@ -323,7 +323,7 @@ const emit = defineEmits(['submitdata', 'showtp']);
           <input id="agree" type="checkbox" v-model="formAgree" class="w-4 h-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500 focus:ring-2 white:bg-gray-100 dark:border-gray-600">
           <span><label for="agree" class="ml-2 text-sm font-medium text-gray-900 white:text-gray-900">Yes,</label> 
             I agree to the 
-            <a @click.prevent="$emit('showtp')" class="underline text-blue-600 hover:no-underline">Terms & Policies.</a>
+            <a @click.prevent="$emit('showtp')" class="underline text-blue-600 hover:no-underline cursor-pointer">Terms & Policies.</a>
           </span>
         </div>
       </div>
