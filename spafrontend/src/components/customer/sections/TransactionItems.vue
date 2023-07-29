@@ -29,7 +29,7 @@ const errors = ref([]);
 const toggleViewReview = ref(false);
 
 const hasReview = (item) => {
-    const statusArr = Array('Booked', 'Completed');
+    const statusArr = Array('Completed');
     const exist = statusArr.find( (status) => {
         return status == item.booking_status;
     });
@@ -93,9 +93,13 @@ const toggleModal = ()=>{
 }
 
 const submitReview = async (data) => {
-    // console.log("Parent submitReview: ", data);
-    errors.value =[];
+    
+    const el = document.getElementById('btnWriteReview');
+    // console.log("Parent submitReview: ", data, " BTN:", el.textContent );
+    if (el.textContent==='Saving...') return false;
 
+    errors.value =[];
+    el.textContent="Saving...";
     const config = {
         headers: {
             'Content-Type': 'multipart/form-data',
@@ -125,9 +129,9 @@ const submitReview = async (data) => {
     try {
         const response = await axios.post(action_url, formData, config);        
         const record = response.data.data;
-        console.log("Review - Response: ", record);
+        // console.log("Review - Response: ", record);
         let collectionItem = props.collection.find( ({ books_id }) =>parseInt(books_id) == parseInt(record.book_id) );
-        console.log("Collection Item: ", collectionItem);
+        // console.log("Collection Item: ", collectionItem);
         if (collectionItem !== undefined) {
             collectionItem.product_review_book_id = record.book_id;
             collectionItem.product_review_id = record.id;
@@ -141,16 +145,22 @@ const submitReview = async (data) => {
             const message = 'An error has occured: ${response.status}';
             throw new Error(message);
         }
+        toggleModal();
     } catch (error) {
         errors.value = error.response.data.errors;
         console.log("Errors: ", errors.value);
         // console.log("Errors: ", errors);
     }
+    el.textContent="Save";
 }
 
 const submitReport = async (data) => {
     console.log("Parent submitReport: ", data);
+    const el = document.getElementById('btnWriteReport');
+    if (el.textContent==='Submitting...') return false;
+
     errors.value =[];
+    el.textContent="Submitting...";
     const config = {
         headers: {
             'Content-Type': 'multipart/form-data',
@@ -197,11 +207,13 @@ const submitReport = async (data) => {
             const message = 'An error has occured: ${response.status}';
             throw new Error(message);
         }
+        toggleModal();
     } catch (error) {
         errors.value = error.response.data.errors;
         console.log("Errors: ", errors.value);
         // console.log("Errors: ", errors);
     }
+    el.textContent="Submit";
 }
 
 

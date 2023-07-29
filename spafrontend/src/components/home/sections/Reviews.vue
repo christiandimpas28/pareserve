@@ -33,7 +33,8 @@ watch(() => props.collection, (c, b) => {
         reviewUploads.value.length =0;
         c.forEach( (item, index) => {
             sumRating+= item.rating;
-            reformatUploads(item.id, item.photos);
+            if (item.photos !== null && item.photos.length>0)
+                reformatUploads(item.id, item.photos);
         });
 
         avgRating.value = Math.floor(sumRating/lenReview.value);

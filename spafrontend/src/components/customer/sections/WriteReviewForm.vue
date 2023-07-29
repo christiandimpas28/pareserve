@@ -197,7 +197,7 @@ const resetUpload = () => {
                 <div v-if="errors.review">
                     <span class="text-red-400 text-sm m-2 p-2 bg-red-50 rounded-md">{{ errors.review[0] }}</span>
                 </div> 
-                <textarea id="review" maxlength="5000" v-model="form.review"  rows="6" class="w-[400px] block p-2.5 w-full text-sm text-gray-900 rounded-lg border border-gray-300 focus:ring-blue-500 focus:border-blue-500 dark:border-gray-600 dark:placeholder-gray-400 white:text-dark dark:focus:ring-blue-500 dark:focus:border-blue-500" placeholder="Write your thoughts here..."></textarea>
+                <textarea id="review" maxlength="5000" minlength="50" v-model="form.review"  rows="6" class="w-[400px] block p-2.5 w-full text-sm text-gray-900 rounded-lg border border-gray-300 focus:ring-blue-500 focus:border-blue-500 dark:border-gray-600 dark:placeholder-gray-400 white:text-dark dark:focus:ring-blue-500 dark:focus:border-blue-500" placeholder="Write your thoughts here..."></textarea>
             </div>
             <div class="mb-4">
                 <div class="grid grid-cols-4 gap-2">
@@ -227,7 +227,7 @@ const resetUpload = () => {
                 />
             </div>
             <div class="flex mb4 justify-end">
-                <button class="text-white mr-4 bg-cyan-700 hover:bg-cyan-800 focus:ring-4 focus:outline-none focus:ring-cyan-300 font-medium rounded-lg text-sm w-auto px-5 py-2.5 text-center dark:bg-cyan-600 dark:hover:bg-cyan-700 dark:focus:ring-cyan-800">
+                <button id="btnWriteReview" class="text-white mr-4 bg-cyan-700 hover:bg-cyan-800 focus:ring-4 focus:outline-none focus:ring-cyan-300 font-medium rounded-lg text-sm w-auto px-5 py-2.5 text-center dark:bg-cyan-600 dark:hover:bg-cyan-700 dark:focus:ring-cyan-800">
                     Save
                 </button>
             </div>
