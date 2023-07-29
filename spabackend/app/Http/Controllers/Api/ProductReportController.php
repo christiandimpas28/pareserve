@@ -23,7 +23,7 @@ class ProductReportController extends Controller
         $request->validate([
             'books_id' => ['required'],
             'product_id' => ['required'],
-            'remarks' => ['required', 'min:100', 'max:5000'],
+            'remarks' => ['required', 'min:10', 'max:5000'],
             'related_to' => ['required', 'max:225'],
         ]);
 
