@@ -38,6 +38,14 @@ const hasReview = (item) => {
     return true;
 }
 
+const allowReport = (item) => {
+    const statusArr = Array('Completed');
+    const exist = statusArr.find( (status) => {
+        return status == item.booking_status;
+    });
+    return false;
+}
+
 const writeReview = (item) => {
     console.log("Write Review: ", item);
     reviewForm.value = {
@@ -364,8 +372,10 @@ const reformatUploads = (photos) => {
                             </td>
                             <td class="whitespace-nowrap px-6 py-4">
                                 <div class="flex justify-center items-center">
+                                    <template v-if="allowReport(item)">
                                     <a @click="reportThis(item)" class="underline hover:no-underline text-red-600 font-semibold cursor-pointer" v-if="item.product_report_id==null">Report</a>
                                     <a @click="seeReport(item)" class="underline hover:no-underline text-red-600 font-semibold cursor-pointer" v-if="item.product_report_id!=null">See Report</a>
+                                    </template>
                                 </div>
                             </td>
                         </tr>
