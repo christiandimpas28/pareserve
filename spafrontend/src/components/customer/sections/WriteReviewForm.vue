@@ -197,7 +197,7 @@ const resetUpload = () => {
                 <div v-if="errors.review">
                     <span class="text-red-400 text-sm m-2 p-2 bg-red-50 rounded-md">{{ errors.review[0] }}</span>
                 </div> 
-                <textarea id="review" maxlength="5000" minlength="50" v-model="form.review"  rows="6" class="w-[400px] block p-2.5 w-full text-sm text-gray-900 rounded-lg border border-gray-300 focus:ring-blue-500 focus:border-blue-500 dark:border-gray-600 dark:placeholder-gray-400 white:text-dark dark:focus:ring-blue-500 dark:focus:border-blue-500" placeholder="Write your thoughts here..."></textarea>
+                <textarea id="review" maxlength="5000" minlength="10" v-model="form.review"  rows="6" class="w-[400px] block p-2.5 w-full text-sm text-gray-900 rounded-lg border border-gray-300 focus:ring-blue-500 focus:border-blue-500 dark:border-gray-600 dark:placeholder-gray-400 white:text-dark dark:focus:ring-blue-500 dark:focus:border-blue-500" placeholder="Write your thoughts here..."></textarea>
             </div>
             <div class="mb-4">
                 <div class="grid grid-cols-4 gap-2">
