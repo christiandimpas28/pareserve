@@ -13,7 +13,7 @@ const errorMsg = ref('');
 const parentView = ref('PROFILE');
 const listing_count = ref(0);
 const showModal = ref(false);
-const modalTitle = ref('Affiliate Policy Agreement');
+const modalTitle = ref('Merchant Policy Agreement');
 const agree = ref(false);
 
 onMounted(() => {

@@ -15,7 +15,7 @@ onMounted(() => {
         { img: 'http://localhost:8000/uploads/categories/city.jpg', name: 'City', query: 'city' },
         // { img: 'http://localhost:8000/uploads/categories/camping.jpg', name: 'Camping', query: 'camping' },
         // { img: 'http://localhost:8000/uploads/categories/mountain-resort.jpg', name: 'Mountain Resort', query: 'mountain' },
-        { img: 'http://localhost:8000/uploads/categories/pools.jpg', name: 'Pools', query: 'pool' },
+        //{ img: 'http://localhost:8000/uploads/categories/pools.jpg', name: 'Pools', query: 'pool' },
         // { img: 'http://localhost:8000/uploads/categories/homes.jpg', name: 'Homes', query: 'home' },
         // { img: 'http://localhost:8000/uploads/categories/tiny-house.jpg', name: 'Tiny House', query: 'tiny' },
         // { img: 'http://localhost:8000/uploads/categories/tropical.jpg', name: 'Tropical', query: 'tropical' },

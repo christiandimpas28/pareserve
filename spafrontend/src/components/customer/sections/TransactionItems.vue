@@ -39,11 +39,13 @@ const hasReview = (item) => {
 }
 
 const allowReport = (item) => {
-    const statusArr = Array('Completed');
-    const exist = statusArr.find( (status) => {
-        return status == item.booking_status;
-    });
-    return false;
+    // console.log("allow report",item , '=', 'Completed'==item.booking_status);
+    // const statusArr = Array('Completed');
+    // const exist = statusArr.find( (status) => {
+    //     return status == item.booking_status;
+    // });
+    return item.booking_status == 'Completed';
+    // return false;
 }
 
 const writeReview = (item) => {
@@ -373,8 +375,8 @@ const reformatUploads = (photos) => {
                             <td class="whitespace-nowrap px-6 py-4">
                                 <div class="flex justify-center items-center">
                                     <template v-if="allowReport(item)">
-                                    <a @click="reportThis(item)" class="underline hover:no-underline text-red-600 font-semibold cursor-pointer" v-if="item.product_report_id==null">Report</a>
-                                    <a @click="seeReport(item)" class="underline hover:no-underline text-red-600 font-semibold cursor-pointer" v-if="item.product_report_id!=null">See Report</a>
+                                        <a @click="reportThis(item)" class="underline hover:no-underline text-red-600 font-semibold cursor-pointer" v-if="item.product_report_id===null">Report</a>    
+                                        <a @click="seeReport(item)" class="underline hover:no-underline text-red-600 font-semibold cursor-pointer" v-if="item.product_report_id!=null">See Report</a>
                                     </template>
                                 </div>
                             </td>
