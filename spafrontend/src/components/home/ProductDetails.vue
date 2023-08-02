@@ -537,7 +537,9 @@ const fetchData = async () => {
 
         hasEarlyDiscount.value= false;
         discountRate.value = 0;
-        if (product.value.listing_category != null && product.value.listing_category.discount_rate.length> 0){
+        if (product.value.listing_category != null 
+            && product.value.listing_category.discount_rate !=null
+            && product.value.listing_category.discount_rate.length> 0){
             console.log("HAS LISTING DISCOUNT: ",  product.value.listing_category);
             hasEarlyDiscount.value= true;
             let discount_value = product.value.listing_category.discount_rate;
