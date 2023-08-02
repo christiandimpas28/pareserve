@@ -10,12 +10,12 @@ const uploadFilesCount = computed(() => {
     return props.collection.length;
 });
 
-const emit = defineEmits(['deleteImage']);
+const emit = defineEmits(['deleteimage']);
 
 const deleteImage = (item) => {
     // console.log("Delete Image Triggered");
     // console.log("Image:", item);
-    emit('delete-image', item);
+    emit('deleteimage', item);
 }
 
 

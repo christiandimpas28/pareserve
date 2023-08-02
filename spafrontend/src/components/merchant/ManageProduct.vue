@@ -67,7 +67,7 @@ const submitForm = async (data) => {
 
         console.log("Primary:", data.inputData);
         console.log("Files:", data.inputFiles);
-
+        
         const formData = new FormData();
         
         for( var i = 0; i < data.inputFiles.length; i++ ){
@@ -89,6 +89,7 @@ const submitForm = async (data) => {
         formData.append('breakfast_rate', data.inputData.breakfast_rate);
         formData.append('free_below_age', data.inputData.free_below_age);
         formData.append('discount', data.inputData.discount);
+        formData.append('extras', data.inputData.extras);
         formData.append('enabled', data.inputData.enabled);
         formData.append('listing_category_id', data.inputData.listing_category_id);
 
@@ -252,9 +253,9 @@ const addAttribute = async (item)=> {
                     :parent="parent" 
                     :form="form" 
                     :action="action" 
-                    @save-data="submitForm"
+                    @savedata="submitForm"
                     @close-form="closeForm"
-                    @delete-data="deleteForm"
+                    @deletedata="deleteForm"
                 />
             </div>
         </div>

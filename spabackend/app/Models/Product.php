@@ -25,6 +25,7 @@ class Product extends Model
         'breakfast_rate',
         'free_below_age',
         'discount',
+        'extras',
         'listing_category_id',
     ];
 

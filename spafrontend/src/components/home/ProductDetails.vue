@@ -515,6 +515,8 @@ const discountRate = ref(0);
 const discountAmount = ref(0);
 const discountMessage = ref('');
 const discountType = ref('%');
+const extrasCollection = ref([]);
+const extrasProps = ref({title: '', rate: 0, qty:1 });
 
 const fetchData = async () => {
     try {
@@ -556,7 +558,18 @@ const fetchData = async () => {
         }
         console.log("Fetch Discount Rate Val:", discountRate.value);
 
-        // console.log("Listing: ",  product.value.listing_category);
+        //Extras
+        if (product.value.extras !== null && product.value.extras.length > 0) {
+            try {
+                extrasCollection.value = JSON.parse(product.value.extras);    
+            } catch (error) {
+                extrasCollection.value = [];
+            }
+        } else {
+            extrasCollection.value = [];
+        }
+
+        // console.log("extrasCollection: ",  extrasCollection.value, "EXTRAS:", extrasCollection.value);
         // regroupAttribute(form.value.product_attributes);
     } catch (error) {
         console.log("fetchData" ,error);
@@ -733,6 +746,72 @@ const moneyFormat = (v) =>{
     }
 }
 
+const toggleExtrasForm = ref(false);
+const toggleExtrasDiv = ref(false);
+
+const toggleExtras = () => {
+    let el = document.getElementById("toggle-extras-link");
+    if (el.textContent==='Show') 
+        el.textContent='Hide';
+    else
+        el.textContent = 'Show';
+
+    toggleExtrasDiv.value = !toggleExtrasDiv.value;
+}
+
+
+const setExtrasValue = (item) => {
+    
+    const foundIndex = extrasCollection.value.findIndex(el => {
+        return el.title.trim().toLowerCase() === item.trim().toLowerCase();
+    });
+    extrasProps.value = {title: '', rate: 0, qty:1 };
+    toggleExtrasForm.value = false;
+    if (foundIndex>-1) {
+        extrasProps.value =extrasCollection.value[foundIndex];
+        extrasProps.value.qty = 1;
+        toggleExtrasForm.value = true;
+    }
+    // console.log("setExtrasValue: ",item, " OBJECT", extrasProps.value, "INDEX", foundIndex);
+}
+
+const addExtras = (item) => {
+    console.log("addExtras: ",item);
+    if (item == null) return;
+    
+
+    let extra_prate = item.rate;
+    let subtotal =  parseFloat(extra_prate) * item.qty; 
+    const subtotal_str = parseFloat(subtotal).toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2});
+
+    let subtotal_name = item.title.replace(/\s/g, '');
+    subtotal_name = 'extras' + subtotal_name.toLowerCase();
+    removeArrByName(subTotals.value, 'servicefee');
+    removeArrByName(subTotals.value, subtotal_name);
+
+    console.log("QTY 0: ",item.qty, "IS: ",item.qty == 0, "NAME:", subtotal_name);
+    if (item.qty == 0) {
+        removeArrByName(subTotals.value, subtotal_name);
+        recomputeFees(subTotals.value);
+        return;
+    }
+
+    subTotals.value.push({
+        index: 2,
+        name: subtotal_name,
+        label: item.title + ' ('+ item.qty +')',
+        value: subtotal_str,
+        key: getSubtotalsKey(),
+        raw: {
+            rate: extra_prate,
+            qty: item.qty,
+            total: subtotal,
+        }
+    });
+
+    recomputeFees(subTotals.value);
+}
+
 </script>
 
 <template>
@@ -860,7 +939,7 @@ const moneyFormat = (v) =>{
                                             </div>
                                         </div>
 
-                                        <div class="inline-grid gap-2 grid-cols-2 w-full">
+                                        <div class="inline-grid gap-2 grid-cols-2 w-full mb-4">
 
                                             <div class="text-start flex items-center">
                                                 <span>Extra Pax - Adult</span>
@@ -876,6 +955,31 @@ const moneyFormat = (v) =>{
                                                 <span class="mr-2">Age</span>
                                                 <input type="number" id="children_age" name="children_age" min="0" max="14" v-model="addOnsRequest.children_age" class="w-[52px] mr-2 text-center rounded-md border border-gray-500 bg-white p-1 text-base font-medium text-[#6B7280] outline-none focus:border-[#6A64F1] focus:shadow-md" placeholder="Age">
                                                 <button @click.prevent="addPax()" class="px-2 py-1 font-bold text-sm rounded-full bg-cyan-300 hover:bg-cyan-600">+</button>
+                                            </div>
+                                        </div>
+
+                                        <div class="mb-4">
+                                            <h5 class="font-semibold mb-2 text-center">More <span><a id="toggle-extras-link" @click="toggleExtras" class="underline text-blue-700 hover:no-underline cursor-pointer p-1">Show</a></span></h5>
+                                            
+                                            <div class="my-4" v-show="toggleExtrasDiv">
+                                                <div class="mb-4">
+                                                    <select id="status" name="status" @change="setExtrasValue($event.target.value)" class="bg-gray-50 border border-[#e0e0e0] text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 white:bg-gray-700 dark:border-[#e0e0e0] dark:placeholder-gray-400 white:text-dark dark:focus:ring-blue-500 dark:focus:border-blue-500">
+                                                        <option value="">Please select one</option>
+                                                        <option v-for="option in extrasCollection" :value="option.title">
+                                                            {{ option.title }} - ₱{{ option.rate }}/unit
+                                                        </option>
+                                                    </select>
+                                                </div>
+                                                <div class="inline-grid gap-2 grid-cols-2 w-full mb-4" v-show="toggleExtrasForm">
+                                                    <div class="text-start flex items-center">
+                                                        <span id="extrasTitle">{{ extrasProps.title }}</span>
+                                                    </div>
+                                                    <div class="text-center">
+                                                        <span class="mr-2" id="extrasRate">₱{{ extrasProps.rate }}</span>
+                                                        <input type="number" id="extras_qty" name="extras_qty" min="0" max="999" v-model="extrasProps.qty" class="w-[52px] mr-2 text-center rounded-md border border-gray-500 bg-white p-1 text-base font-medium text-[#6B7280] outline-none focus:border-[#6A64F1] focus:shadow-md" placeholder="Qty">
+                                                        <button @click.prevent="addExtras(extrasProps)" class="px-2 py-1 font-bold text-sm rounded-full bg-cyan-300 hover:bg-cyan-600">+</button>
+                                                    </div>
+                                                </div>
                                             </div>
                                         </div>
                                     </div>

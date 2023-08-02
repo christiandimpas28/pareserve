@@ -52,6 +52,7 @@ class ProductResource extends JsonResource
             'breakfast_rate' => $this->breakfast_rate,
             'free_below_age' => $this->free_below_age,
             'discount' => $this->discount,
+            'extras' => $this->extras,
             'listing_category_id' => $this->listing_category_id,
             'product_attributes' => ProductAttributesResource::collection($this->productAttributes),
             'reviews' => ProductReviewsResource::collection($this->productReviews),

@@ -7,6 +7,8 @@ const imagePreviewCollection = ref([]);
 const imageUploadCollection = ref([]);
 const galleryTitle = ref('Property Gallery');
 const imageUploadTitle =ref('Image Upload Preview');
+const extrasCollection = ref([]);
+const extrasProps = ref({title: null, rate: 0, error:null });
 
 const props = defineProps({
   form: { 
@@ -21,6 +23,7 @@ const props = defineProps({
         min_guest: 2,
         enabled: 1,
         discount: 0.0,
+        extras: null,
         rate: 0.0,
         extra_pax_rate: 0.0,
         extra_bed_rate: 0.0,
@@ -41,7 +44,16 @@ const props = defineProps({
   action: { type: String, default: 'POST' },
 });
 
-const emit = defineEmits(['submit']);
+const emit = defineEmits(['savedata', 'deletedata']);
+
+watch(() => props.form.extras, (c, b) => { 
+    if (c!=null && c.length>1) {
+        extrasCollection.value = JSON.parse(c);
+    } else {
+        extrasCollection.value = [];
+    }
+});
+
 
 watch(() => props.form.name, (c, b) => { 
     if (c!=null && c.length>1) {
@@ -53,7 +65,7 @@ watch(() => props.form.photos, (c, b) => {
    if(props.form.id != 0 && props.form.photos !== undefined && props.form.photos != null && props.form.photos.length>0){
     const arr_product_photos = props.form.photos.split(',');
     imagePreviewCollection.value=[];
-    console.log("product_photos", props.form.photos, "Is ARRAY", arr_product_photos);
+    // console.log("product_photos", props.form.photos, "Is ARRAY", arr_product_photos);
     arr_product_photos.forEach( (item, index)=> {
         let img_name = item.replace(/^\s+|\s+$/gm,'');
         // console.log(index, "Item:", img_name);
@@ -89,7 +101,6 @@ const string_to_slug = (str) => {
 
 const onFileChange = (e) => {
     const files = e.target.files;
-    console.log("onFileChange", files);
     imageUploadCollection.value = [];
     props.files.length = 0;
     for(let i=0; i<files.length; i++) {
@@ -108,12 +119,13 @@ const submit = () => {
     // console.log("Emit Submit", props.form, props.files);
     imageUploadCollection.value =[];
     document.getElementById("photos").value=null;
-    emit('save-data', { inputData: props.form, inputFiles: props.files});
+    props.form.extras = extrasCollection.value.length>0? JSON.stringify(extrasCollection.value):null;
+    emit('savedata', { inputData: props.form, inputFiles: props.files});
     // this.$emit('save-data', fromData);
 }
 
 const deleteImage = async (item) => {
-    console.log("Parent deleteImage", item);
+    // console.log("Parent deleteImage", item);
     try {
         const response = await axios.delete('/api/partner/product/delete/photo/'+item.product_id, { data: item });        
         if (!response) {
@@ -130,8 +142,8 @@ const deleteImage = async (item) => {
         });
         imagePreviewCollection.value = new_items
         props.form.photos = rd.photos;
-        console.log("rd", rd, "props.form", props.form);
-        console.log("new_items", imagePreviewCollection.value);
+        // console.log("rd", rd, "props.form", props.form);
+        // console.log("new_items", imagePreviewCollection.value);
     } catch (error) {
         console.log("deleteImage Error", error);
     }
@@ -140,7 +152,7 @@ const deleteImage = async (item) => {
 const deleteProduct = () => {
     // console.log("Delete Click - Triggered");
     // console.log("Listing:", props.form.listing_category_id , "Product:", props.form.id, "Name:", props.form.name);
-    emit('delete-data', { inputData: props.form });
+    emit('deletedata', { inputData: props.form });
 }
 
 const close = () => {
@@ -151,6 +163,86 @@ const close = () => {
     emit('close-form');
 }
 
+const toggleExtrasDiv = ref(false);
+
+const toggleExtras = () => {
+    let el = document.getElementById("toggle-extras-link");
+    if (el.textContent==='Show') 
+        el.textContent='Hide';
+    else
+        el.textContent = 'Show';
+
+    toggleExtrasDiv.value = !toggleExtrasDiv.value;
+}
+
+const addMoreExtra = () => {
+    console.log("extrasProps", extrasProps, " IS FLOAT:", parseFloat(extrasProps.value.rate));
+    
+    if (isNaN(parseFloat(extrasProps.value.rate))) {
+        extrasProps.value.error = 'Invalid rate value.';
+    } else {
+        if (extrasProps.value.title.length<3) {
+            extrasProps.value.error = 'Invalid title.';
+        } else {
+            extrasProps.value.error = null;
+        }
+        extrasProps.value.rate = moneyFormat(parseFloat(extrasProps.value.rate))
+        extrasProps.value.title = titleCase(extrasProps.value.title);
+    }
+
+    if (extrasProps.value.error !== null) return;
+    let foundIndex= -1;
+    if (extrasCollection.value !== null && extrasCollection.value.length>0){
+        foundIndex = extrasCollection.value.findIndex(el => {
+            return el.title.trim().toLowerCase() === extrasProps.value.title.trim().toLowerCase();
+        });
+    } else {
+        extrasCollection.value = [];
+    }
+    
+    if (foundIndex===-1) {
+        extrasCollection.value.push(
+            {
+                title: extrasProps.value.title.trim(),
+                rate: extrasProps.value.rate.trim()
+            }
+        );
+        extrasProps.value.title = "";
+        extrasProps.value.rate = "";
+    } else {
+        extrasProps.value.error = 'Item already exists.';
+    }
+    console.log("extrasCollection.value", extrasCollection.value, " str:", JSON.stringify(extrasCollection.value));
+    
+}
+
+const deleteExtra = (data) => {
+    removeArrByTitle(extrasCollection.value, data.title);
+}
+
+const moneyFormat = (v) =>{
+    try {
+        if (isNaN(v)) throw "Not a Number" 
+        const fv = parseFloat(v);
+        return fv.toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2});
+    } catch (error) {
+        return "0.00"
+    }
+}
+
+const titleCase = (str) => {
+  return str.toLowerCase().replace(/\b\w/g, s => s.toUpperCase());
+}
+
+const removeArrByTitle = (arr, title) => {
+   const requiredIndex = arr.findIndex(el => {
+      return el.title === title;
+   });
+   if(requiredIndex === -1){
+      return false;
+   };
+   return !!arr.splice(requiredIndex, 1);
+};
 </script>
 
 <template>
@@ -158,7 +250,7 @@ const close = () => {
         
         <div class="w-full">
             <div class="mb-4">
-                <ImageGallery :collection="imagePreviewCollection" :mode="1" :title="galleryTitle" @delete-image="deleteImage"/>
+                <ImageGallery :collection="imagePreviewCollection" :mode="1" :title="galleryTitle" @deleteimage="deleteImage"/>
             </div>
             <form @submit.prevent="submit()" method="POST" enctype="multipart/form-data">
                 <input type="hidden" name="id" id="id" v-model="form.id" />
@@ -250,6 +342,59 @@ const close = () => {
                         </div> -->
                     </div>
                 </div>
+
+                <!-- More Add-ons -->
+                <div class="mb-4">
+                    <p class="mt-6 mb-4 text-base font-medium">More Extras <span><a id="toggle-extras-link" @click="toggleExtras" class="underline text-blue-700 text-sm hover:no-underline cursor-pointer p-1">Show</a></span></p>
+                    <div class="my-4" v-show="toggleExtrasDiv">
+                        <div class="p-2 bg-red-200 rounded-md" v-if="extrasProps.error !== null">{{ extrasProps.error }}</div>
+                        <div class="grid grid-cols-3 gap-4 p-2">
+                            <div class="col-span-2">
+                                <div class="grid grid-cols-2 gap-1">
+                                    <div>
+                                        <label for="extra_title" class="mb-3 block text-base font-medium text-[#07074D]">Extra Title</label>
+                                        <input type="text" v-model="extrasProps.title" name="extra_title" id="extra_title" 
+                                            maxlength="16" placeholder="Title" 
+                                            class="w-full rounded-md border border-[#e0e0e0] bg-white py-3 px-3 text-base font-medium text-[#6B7280] outline-none focus:border-[#6A64F1] focus:shadow-md" 
+                                        />
+                                    </div>
+                                    <div>
+                                        <label for="extra_rate" class="mb-3 block text-base font-medium text-[#07074D]">Extra Rate (Fixed Amount)</label>
+                                        <input type="text" v-model="extrasProps.rate" name="extra_rate" id="extra_rate" 
+                                            maxlength="15" placeholder="Rate e.g. 20, 150, 200, .." 
+                                            class="w-full rounded-md border border-[#e0e0e0] bg-white py-3 px-3 text-base font-medium text-[#6B7280] outline-none focus:border-[#6A64F1] focus:shadow-md" 
+                                        />
+                                    </div>
+                                    <div>
+                                        <button @click.prevent="addMoreExtra()" class="mt-2 text-white mr-4 bg-cyan-700 hover:bg-cyan-800 focus:ring-4 focus:outline-none focus:ring-cyan-300 font-medium rounded-lg text-sm w-auto px-5 py-2.5 text-center dark:bg-cyan-600 dark:hover:bg-cyan-700 dark:focus:ring-cyan-800">Add</button>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="bg-gray-300 rounded-lg p-3">
+                                <h1 class="mb-4 text-base font-medium">Extra Items</h1>
+                                <ul>
+                                    <li v-for="x in extrasCollection" class="flex">
+                                        <div class="flex mr-1 items-center">
+                                            <button 
+                                                @click.prevent="deleteExtra(x)" 
+                                                class="mr-1 text-white-900 bg-[#F77E7E]/10 hover:bg-[#F77E7E] focus:ring-4 focus:outline-none focus:ring-[#F77E7E]/50 font-medium rounded-lg text-sm p-1 text-center inline-flex items-center dark:focus:ring-[#F77E7E]/100">
+                                                <svg fill="none" stroke="currentColor" 
+                                                    stroke-width="2" viewBox="0 0 24 24" 
+                                                    xmlns="http://www.w3.org/2000/svg" aria-hidden="true" 
+                                                    class="h-3 w-3 text-primary dark:text-primary-100">
+                                                    <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"></path>
+                                                </svg>
+                                            </button>
+                                            {{ x.title }}:
+                                        </div>
+                                        <div class="flex justify-end">₱{{ moneyFormat(x.rate) }}</div>
+                                    </li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
                 <div class="mb-4">
                     <ImageGallery :collection="imageUploadCollection" :mode="0" :title="imageUploadTitle"  />
                 </div>

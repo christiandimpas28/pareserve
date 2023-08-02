@@ -28,6 +28,7 @@ return new class extends Migration
             $table->decimal('breakfast_rate', $precision = 8, $scale = 2)->default(0.0);
             $table->tinyInteger('free_below_age')->default(7);
             $table->decimal('discount', $precision = 8, $scale = 2)->default(0.0);
+            $table->json('extras')->default('[{"title":"Extra Towel","rate":0},{"title":"Extra Pillow","rate":0}]');
             // $table->foreignId('listing_category_id')
             //     ->constrained(table: 'listing_categories', indexName: 'idx_listing_category_id')
             //     ->onDelete('cascade');
