@@ -219,7 +219,7 @@ const showTermsPolicies = () =>{
                                 <li>
                                     d. Failure  to provide the said requirements will lead to account removed.</li>
                                 <li>
-                                    e. Account banned to falsification and having a massive report by their customer as scammers and alike.</li>
+                                    e. Account suspension to falsification and having a massive report by their customer as scammers and alike.</li>
                             </ul>
                             
                             
