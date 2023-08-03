@@ -229,15 +229,26 @@ const showTermsPolicies = () =>{
                             </li>
                             <ul class="pl-8">
                                 <li>
-                                    a.  <strong>Hotel Listing:</strong> Merchants shall ensure that all information provided for their respective hotel listings on the platform is accurate, complete, and up-to-date.</li>
+                                    a.  <strong>Hotel Listing:</strong> Merchants shall ensure that all information provided for their respective hotel listings on the platform is accurate, complete, and up-to-date.
+                                </li>
                                 <li>
-                                    b. <strong>Availability and Rates:</strong> Merchants shall be responsible for managing and updating room availability and rates on the platform regularly.</li>
+                                    b. <strong>Availability and Rates:</strong> Merchants shall be responsible for managing and updating room availability and rates on the platform regularly.
+                                </li>
                                 <li>
-                                    c. <strong>Booking Confirmation:</strong> Merchants can get the information of any successful bookings made through the platform including guest information, dates, and payment details.</li>
+                                    c. <strong>Booking Confirmation:</strong> Merchants can get the information of any successful bookings made through the platform including guest information, dates, and payment details.
+                                </li>
                                 <li>
-                                    d. <strong>Payment:</strong> PaReserve shall facilitate the payment process with guests and remit the hotel room charges to the merchants after deducting any agreed-upon commission or fees every month.</li>
+                                    d. <strong>Payment:</strong> PaReserve shall facilitate the payment process with guests and remit the hotel room charges to the merchants after deducting any agreed-upon commission or fees every month.
+                                </li>
                                 <li>
-                                    e. <strong>Cancellations and Refunds:</strong> PaReserve shall follow the agreed-upon cancellation and refund policies set forth by the merchants for bookings made through the platform.</li>
+                                    e. <strong>Cancellations and Refunds:</strong> PaReserve shall follow the agreed-upon cancellation and refund policies set forth by the merchants for bookings made through the platform.
+                                </li>
+                                <li>
+                                    Note: Merchant must attend clients request of cancellation and process refund if theres any. 
+                                </li>
+                                <li>
+                                    f. <strong>Billing:</strong> Monthly settlement cutoff date is every 23rd of the month. Merchant must submit billing reports to PaReserve. That includes records of bookings, cancellations and refunds.
+                                </li>
                                 
                             </ul>
                             

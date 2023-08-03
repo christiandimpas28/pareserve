@@ -25,12 +25,11 @@ const props = defineProps({
                 <div class="py-4 px-2 border-gray-400 mb-4 text-sm">
                     <h4 class="font-semibold mb-4">PaReserve Cancellation Policy Agreement</h4>
                     <ul class="spacing-2 list-disc pl-4 mb-4">
-                        <li>Cancellation will charge 10% of the room rate as cancellation fee if the request of cancellation was initiated 3 days prior the check in date.</li>
-                        <li>Cancellation will charge 5% of the room rate as cancellation fee if the request of cancellation was initiated 5 days prior the check in date.</li>
+                        <li>The client will receive the full amount refund if the request of cancellation was initiated 5 days prior the check in date, else 5% of the room rate will be charge.</li>
                         <li>Cancellation on the actual check in date is still allowed but there will be no refund.</li>
                     </ul>
                     <div class="mt-2 p-4 bg-blue-200 rounded-md">
-                        <strong>NOTE:</strong> PaReserve finance team will reach out to you regarding the refund process.
+                        <strong>NOTE:</strong> Merchant will reach out to you regarding the refund process.
                     </div>
                     
                 </div>

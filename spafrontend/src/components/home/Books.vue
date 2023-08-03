@@ -272,7 +272,14 @@ const pay = async () => {
                     <div class="mb-4">
                         <div class="w-full mb-2 select-none border-t-4 border-gray-400 bg-gray-100 p-4 font-medium hover:border-gray-500">
                             <h4 class="font-semibold">PaReserve Cancellation Policy</h4>
-                            <p class="text-sm">PaReserve will charge 5% of the room rate as cancellation fee if the request of cancellation was initiated 7 days prior the check in date. </p>
+                            <ul>
+                                <li class="text-sm">
+                                    * The client will receive the full refund if the request of cancellation was initiated 5 days prior the check in date, else 5% of the room rate will be charge.
+                                </li>
+                                <li class="text-sm">
+                                    * Cancellation on the actual check in date is still allowed but there will be no refund.
+                                </li>
+                            </ul>
                         </div> 
                     </div>
                 </div>
