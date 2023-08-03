@@ -42,7 +42,21 @@ const hasReview = (item) => {
 
 const allowCancel = (item) => {
     console.log("ALLOW CANCEL", 'Booked' === item.booking_status, "ITEM", item);
-    return 'Booked' === item.booking_status;
+    if (item.cancellation_request_created_at !== null) {
+        return false;
+    } 
+    
+    return 'Booked' === item.booking_status;    
+}
+
+const viewCancel = (item) => {
+    console.log("VIEW CANCEL", item.cancellation_request_created_at !== null , "ITEM", item);
+    if (item.cancellation_request_created_at !== null) {
+        return true;
+    } else {
+        return false;
+    }
+    
 }
 
 const allowReport = (item) => {
@@ -93,14 +107,22 @@ const cancelThis = (item) => {
     modalTitle.value = "Request Booking Cancellation";
     console.log("Cancel This: ", item);
     cancelForm.value = {
-        id: 0,
-        book_id: item.books_id,
+        id: item.cancellation_request_id,
+        books_id: item.books_id,
         user_id: item.user_id,
-        remarks: null,
-        refunded: 0,
-        refund_status: 'Refunded'
+        remarks: item.cancellation_request_remarks,
+        refunded: item.cancellation_request_refunded,
+        request_status: item.cancellation_request_request_status,
+        refunded_date: item.cancellation_request_refunded_date,
+        refunded_amount: item.cancellation_request_refunded_amount,
+        request_date: item.cancellation_request_created_at
     }
-    cancelMode.value = 1;
+
+    if (item.cancellation_request_created_at !== null)
+        cancelMode.value = 1;
+    else
+        cancelMode.value = 0;
+
     modalContentId.value = 3;
     showModal.value = !showModal.value;
 }
@@ -265,6 +287,49 @@ const reformatUploads = (photos) => {
 
     return fu;
 }
+
+const cancelbooking = async (data) => {
+    console.log("Parent cancel booking: ", data);
+    const el = document.getElementById('btnCancelProceed');
+    if (el.textContent==='Submitting...') return false;
+
+    el.textContent="Submitting...";
+    var temp = document.createElement("div");
+    temp.innerHTML = data.remarks;
+    data.remarks = temp.textContent || temp.innerText;
+
+    const action_url = '/api/customer/request/cancel/' + data.books_id;
+    const formData = new FormData();
+
+    formData.append('books_id', data.books_id);
+    formData.append('remarks', data.remarks);
+    
+    try {
+        const response = await axios.post(action_url, formData);        
+        const record = response.data.data;
+        console.log("Cancel - Response: ", record);
+        let collectionItem = props.collection.find( ({ books_id }) =>parseInt(books_id) == parseInt(record.books_id) );
+        console.log("Collection Item: ", collectionItem);
+        if (collectionItem !== undefined) {
+            collectionItem.cancellation_request_created_at = record.created_at;
+            collectionItem.cancellation_request_id = record.id;
+            collectionItem.cancellation_request_remarks = record.remarks;
+            collectionItem.cancellation_request_request_status = record.request_status;
+            collectionItem.cancellation_request_refunded_amount = 0.0;
+        }
+
+        if (!response) {
+            const message = 'An error has occured: ${response.status}';
+            throw new Error(message);
+        }
+        toggleModal();
+    } catch (error) {
+        errors.value = error.response.data.errors;
+        console.log("Errors: ", errors.value);
+        // console.log("Errors: ", errors);
+    }
+    el.textContent=" Proceed to Cancel Booking ";
+}
 </script>
 <template>
     <div>
@@ -399,8 +464,12 @@ const reformatUploads = (photos) => {
                             <td class="whitespace-nowrap px-6 py-4">
                                 <div class="flex justify-center items-center">
                                     <template v-if="allowCancel(item)">
-                                        <a @click="cancelThis(item)" class="underline hover:no-underline text-red-600 font-semibold cursor-pointer">Cancel</a>    
+                                        <a @click="cancelThis(item)" class="underline hover:no-underline text-red-600 font-semibold cursor-pointer">Cancel</a>
                                     </template>
+                                    <template v-if="viewCancel(item)">
+                                        <a @click="cancelThis(item)" class="underline hover:no-underline text-red-600 font-semibold cursor-pointer">View Cancel</a>
+                                    </template>
+                                    
                                     <template v-if="allowReport(item)">
                                         <a @click="reportThis(item)" class="underline hover:no-underline text-red-600 font-semibold cursor-pointer" v-if="item.product_report_id===null">Report</a>    
                                         <a @click="seeReport(item)" class="underline hover:no-underline text-red-600 font-semibold cursor-pointer" v-if="item.product_report_id!=null">See Report</a>
@@ -443,7 +512,7 @@ const reformatUploads = (photos) => {
                         <SeeReport :form="reportForm"></SeeReport>
                     </template>
                     <template v-if="modalContentId==3">
-                        <CancelReportForm :form="cancelForm" :mode="cancelMode"></CancelReportForm>
+                        <CancelReportForm :form="cancelForm" :mode="cancelMode" v-on:cancelbooking="cancelbooking"></CancelReportForm>
                     </template>
                 </div>
                 <!--footer-->

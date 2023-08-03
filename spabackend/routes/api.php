@@ -17,6 +17,7 @@ use App\Http\Controllers\Api\ProductReviewsController;
 use App\Http\Controllers\Api\CustomerProfileController;
 use App\Http\Controllers\Api\ListingCategoryController;
 use App\Http\Controllers\Api\ProductAttributesController;
+use App\Http\Controllers\Api\CancellationRequestController;
 /*
 |--------------------------------------------------------------------------
 | API Routes
@@ -89,6 +90,8 @@ Route::group(['middleware' => ['auth:sanctum', 'verifyaccess']], function () {
 
     Route::post('/customer/product/review/{books}/{product}', [ProductReviewsController::class, 'store']);
     Route::post('/customer/book/report/{books}', [ProductReportController::class, 'store']);
+
+    Route::post('/customer/request/cancel/{books}', [CancellationRequestController::class, 'store']);
     
     //Customer
     Route::get('/customer/profile', [CustomerProfileController::class, 'show']);

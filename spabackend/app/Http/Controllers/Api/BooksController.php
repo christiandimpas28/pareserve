@@ -159,6 +159,7 @@ class BooksController extends Controller
             ->leftJoin('booked_summaries', 'books.booked_id', '=', 'booked_summaries.id')
             ->leftJoin('product_review', 'books.id', '=', 'product_review.book_id')
             ->leftJoin('product_report', 'books.id', '=', 'product_report.books_id')
+            ->leftJoin('cancellation_request', 'books.id', '=', 'cancellation_request.books_id')
             ->where('books.user_id', '=', $user->id)
             ->orderBy('books.created_at', 'desc')
             ->get([
@@ -177,6 +178,13 @@ class BooksController extends Controller
                 'product_report.photos AS product_report_photos',
                 'product_report.settled AS product_report_settled',
                 'product_report.case_id AS product_report_case_id',
+                'cancellation_request.id AS cancellation_request_id',
+                'cancellation_request.remarks AS cancellation_request_remarks',
+                'cancellation_request.request_status AS cancellation_request_request_status',
+                'cancellation_request.refunded AS cancellation_request_refunded',
+                'cancellation_request.refunded_amount AS cancellation_request_refunded_amount',
+                'cancellation_request.refunded_date AS cancellation_request_refunded_date',
+                'cancellation_request.created_at AS cancellation_request_created_at',
             ]);
 
         // $transactions = Books::select('books.*, booked_summaries.*')
