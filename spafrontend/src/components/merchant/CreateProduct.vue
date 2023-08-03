@@ -55,6 +55,7 @@ const submitForm = async (data) => {
         formData.append('breakfast_rate', data.inputData.breakfast_rate);
         formData.append('free_below_age', data.inputData.free_below_age);
         formData.append('discount', data.inputData.discount);
+        formData.append('extras', data.inputData.extras);
         formData.append('enabled', data.inputData.enabled);
         formData.append('listing_category_id', data.inputData.listing_category_id);
 
@@ -118,8 +119,8 @@ const showToast = (mode) => {
                 :parent="parent" 
                 :form="form" 
                 :action="action" 
-                @save-data="submitForm"
-                @close-form="closeForm"
+                @saveData="submitForm"
+                @closeForm="closeForm"
             />
         </div>
     </div>

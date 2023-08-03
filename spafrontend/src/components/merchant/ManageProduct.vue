@@ -58,6 +58,7 @@ const fetchData = async () => {
 }
 
 const submitForm = async (data) => {
+    console.log("submitForm", data);
     try {
         const config = {
             headers: {
@@ -253,9 +254,9 @@ const addAttribute = async (item)=> {
                     :parent="parent" 
                     :form="form" 
                     :action="action" 
-                    @savedata="submitForm"
-                    @close-form="closeForm"
-                    @deletedata="deleteForm"
+                    @saveData="submitForm"
+                    @closeForm="closeForm"
+                    @deleteData="deleteForm"
                 />
             </div>
         </div>

@@ -74,7 +74,7 @@ const deleteListing = () => {
 }
 
 const deleteImage = async (item) => {
-    // console.log("Parent deleteImage", item);
+    console.log("Parent deleteImage", item);
     try {
         const response = await axios.delete('/api/partner/listings/delete/photo/'+item.listing_id, { data: item });        
         if (!response) {
@@ -145,12 +145,12 @@ defineExpose({
             Yosh! List your property today.
         </h2>
         <p class="text-md text-gray-700 mb-8">
-            Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s...
+            Earn more by listing all of your properties!
         </p>
     </div>
     <div class="mx-auto w-full bg-white">
         <div class="mb-4">
-            <ImageGallery :collection="imagePreviewCollection" :mode="1" :title="galleryTitle" @delete-image="deleteImage"/>
+            <ImageGallery :collection="imagePreviewCollection" :mode="1" :title="galleryTitle" @deleteimage="deleteImage"/>
         </div>
         <form @submit.prevent="submit()" method="POST" enctype="multipart/form-data">
             <input type="hidden" name="id" id="id" v-model="form.id" />

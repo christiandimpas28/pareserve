@@ -118,9 +118,9 @@ const submitForm = async (data) => {
         formData.append('city', data.inputData.city);
         formData.append('merchant_id', merchant.value);
 
-        formData.append('discount_title', data.inputData.discount_title);
-        formData.append('discount_rate', data.inputData.discount_rate);
-        formData.append('discount_condition', data.inputData.discount_condition);
+        formData.append('discount_title', (data.inputData.discount_title == undefined)? '': data.inputData.discount_title);
+        formData.append('discount_rate', (data.inputData.discount_rate==undefined)?'':data.inputData.discount_rate);
+        formData.append('discount_condition', (data.inputData.discount_condition==undefined)? '': data.inputData.discount_condition);
         
         if (action.value==='PUT') {
             formData.append('_method', 'put');

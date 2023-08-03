@@ -59,7 +59,7 @@ const showToast = (mode) => {
                     User Account
                 </h1>
                 <p class="flex justify-start">
-                    Lorem Ipsum is simply dummy text of the printing and typesetting industry.
+                    Our secure platform complies with industry-leading standards, meeting and exceeding data protection regulations.
                 </p>
             </div>
 

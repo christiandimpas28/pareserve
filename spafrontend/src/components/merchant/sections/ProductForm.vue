@@ -44,7 +44,7 @@ const props = defineProps({
   action: { type: String, default: 'POST' },
 });
 
-const emit = defineEmits(['savedata', 'deletedata']);
+const emit = defineEmits(['save-data', 'delete-data', 'close-form']);
 
 watch(() => props.form.extras, (c, b) => { 
     if (c!=null && c.length>1) {
@@ -116,11 +116,11 @@ const onFileChange = (e) => {
 // Emits
 
 const submit = () => {
-    // console.log("Emit Submit", props.form, props.files);
+    console.log("Emit Submit", props.form, props.files);
     imageUploadCollection.value =[];
     document.getElementById("photos").value=null;
     props.form.extras = extrasCollection.value.length>0? JSON.stringify(extrasCollection.value):null;
-    emit('savedata', { inputData: props.form, inputFiles: props.files});
+    emit('save-data', { inputData: props.form, inputFiles: props.files});
     // this.$emit('save-data', fromData);
 }
 
@@ -152,7 +152,7 @@ const deleteImage = async (item) => {
 const deleteProduct = () => {
     // console.log("Delete Click - Triggered");
     // console.log("Listing:", props.form.listing_category_id , "Product:", props.form.id, "Name:", props.form.name);
-    emit('deletedata', { inputData: props.form });
+    emit('delete-data', { inputData: props.form });
 }
 
 const close = () => {
