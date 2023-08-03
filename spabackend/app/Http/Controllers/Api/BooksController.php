@@ -209,6 +209,7 @@ class BooksController extends Controller
 
         $transactions = DB::table('books')
             ->leftJoin('booked_summaries', 'books.booked_id', '=', 'booked_summaries.id')
+            ->leftJoin('cancellation_request', 'books.id', '=', 'cancellation_request.books_id')
             ->leftJoin('users', 'books.user_id', '=', 'users.id')
             ->whereIn('books.product_id', $ids)
             ->orderBy('books.created_at', 'desc')
@@ -218,6 +219,13 @@ class BooksController extends Controller
                 'booked_summaries.*',
                 'users.name',
                 'users.email',
+                'cancellation_request.id AS cancellation_request_id',
+                'cancellation_request.remarks AS cancellation_request_remarks',
+                'cancellation_request.request_status AS cancellation_request_request_status',
+                'cancellation_request.refunded AS cancellation_request_refunded',
+                'cancellation_request.refunded_amount AS cancellation_request_refunded_amount',
+                'cancellation_request.refunded_date AS cancellation_request_refunded_date',
+                'cancellation_request.created_at AS cancellation_request_created_at',
             ]);
 
         return $this->success($transactions, 'Success', 200);

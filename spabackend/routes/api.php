@@ -92,6 +92,7 @@ Route::group(['middleware' => ['auth:sanctum', 'verifyaccess']], function () {
     Route::post('/customer/book/report/{books}', [ProductReportController::class, 'store']);
 
     Route::post('/customer/request/cancel/{books}', [CancellationRequestController::class, 'store']);
+    Route::post('/partner/request/cancel/{cancellationRequest}', [CancellationRequestController::class, 'update']);
     
     //Customer
     Route::get('/customer/profile', [CustomerProfileController::class, 'show']);

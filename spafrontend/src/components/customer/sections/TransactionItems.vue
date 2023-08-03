@@ -56,7 +56,6 @@ const viewCancel = (item) => {
     } else {
         return false;
     }
-    
 }
 
 const allowReport = (item) => {
@@ -247,9 +246,9 @@ const submitReport = async (data) => {
     try {
         const response = await axios.post(action_url, formData, config);        
         const record = response.data.data;
-        // console.log("Report - Response: ", record);
-        let collectionItem = props.collection.find( ({ books_id }) =>parseInt(books_id) == parseInt(record.book_id) );
-        // console.log("Collection Item: ", collectionItem);
+        console.log("Report - Response: ", record);
+        let collectionItem = props.collection.find( ({ books_id }) =>parseInt(books_id) == parseInt(record.books_id) );
+        console.log("Collection Item: ", collectionItem);
         if (collectionItem !== undefined) {
             collectionItem.product_review_book_id = record.book_id;
             collectionItem.product_review_id = record.id;
