@@ -3,6 +3,7 @@ import { toRef,ref  } from 'vue'
 import axios from "axios";
 import WriteReviewForm from './WriteReviewForm.vue';
 import WriteReportForm from './WriteReportForm.vue';
+import CancelReportForm from './CancelForm.vue';
 import SeeReport from './SeeReport.vue';
 
 const props = defineProps({
@@ -22,6 +23,7 @@ toRef(() => props.collection);
 
 const reviewForm = ref({});
 const reportForm = ref({});
+const cancelForm = ref({});
 const showModal = ref(false);
 const modalTitle = ref('Write Review');
 const modalContentId = ref(0);
@@ -36,6 +38,11 @@ const hasReview = (item) => {
     // console.log("hasReview: ", item, " Exist: ", exist);
     if (item.product_review_id === null && exist) return false;
     return true;
+}
+
+const allowCancel = (item) => {
+    console.log("ALLOW CANCEL", 'Booked' === item.booking_status, "ITEM", item);
+    return 'Booked' === item.booking_status;
 }
 
 const allowReport = (item) => {
@@ -78,7 +85,24 @@ const reportThis = (item) => {
     }
     modalContentId.value = 1;
     showModal.value = !showModal.value;
-    
+}
+
+const cancelMode = ref(0);
+
+const cancelThis = (item) => {
+    modalTitle.value = "Request Booking Cancellation";
+    console.log("Cancel This: ", item);
+    cancelForm.value = {
+        id: 0,
+        book_id: item.books_id,
+        user_id: item.user_id,
+        remarks: null,
+        refunded: 0,
+        refund_status: 'Refunded'
+    }
+    cancelMode.value = 1;
+    modalContentId.value = 3;
+    showModal.value = !showModal.value;
 }
 
 const seeReport = (item) => {
@@ -374,6 +398,9 @@ const reformatUploads = (photos) => {
                             </td>
                             <td class="whitespace-nowrap px-6 py-4">
                                 <div class="flex justify-center items-center">
+                                    <template v-if="allowCancel(item)">
+                                        <a @click="cancelThis(item)" class="underline hover:no-underline text-red-600 font-semibold cursor-pointer">Cancel</a>    
+                                    </template>
                                     <template v-if="allowReport(item)">
                                         <a @click="reportThis(item)" class="underline hover:no-underline text-red-600 font-semibold cursor-pointer" v-if="item.product_report_id===null">Report</a>    
                                         <a @click="seeReport(item)" class="underline hover:no-underline text-red-600 font-semibold cursor-pointer" v-if="item.product_report_id!=null">See Report</a>
@@ -414,6 +441,9 @@ const reformatUploads = (photos) => {
                     </template>
                     <template v-if="modalContentId==2">
                         <SeeReport :form="reportForm"></SeeReport>
+                    </template>
+                    <template v-if="modalContentId==3">
+                        <CancelReportForm :form="cancelForm" :mode="cancelMode"></CancelReportForm>
                     </template>
                 </div>
                 <!--footer-->
